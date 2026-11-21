@@ -1,6 +1,6 @@
 # DentalCraft Developer Guide
 
-*How the repositories fit together, how to build, test and release them, how an agent drives the application, and how to contribute. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.13 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8).*
+*How the repositories fit together, how to build, test and release them, how an agent drives the application, and how to contribute. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.14 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8).*
 
 > **Not a medical device.** DentalCraft is research and design software. It is not certified for clinical use, and nothing in this guide changes that.
 

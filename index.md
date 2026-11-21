@@ -29,9 +29,9 @@ The documentation of [DentalCraft](https://github.com/dnviti/dentalcraft), a des
 
 ## Updates
 
-The documentation is regenerated at every release of DentalCraft. The current edition (21 November 2026) describes version 0.2.0-alpha.13 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8), with the Settings and the direct printing of aligners. The rule is in the [README](https://github.com/dnviti/dentalcraft-docs#how-this-repository-is-updated).
+The documentation is regenerated at every release of DentalCraft. The current edition (21 November 2026) describes version 0.2.0-alpha.14 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8), with the Settings and the direct printing of aligners. The rule is in the [README](https://github.com/dnviti/dentalcraft-docs#how-this-repository-is-updated).
 
-La documentazione viene rigenerata a ogni release di DentalCraft. L'edizione attuale (21 novembre 2026) descrive la versione 0.2.0-alpha.13 (modulo Allineatori 0.2.0-alpha.12, motore 0.3.0-alpha.8), con le Impostazioni e la stampa diretta degli allineatori.
+La documentazione viene rigenerata a ogni release di DentalCraft. L'edizione attuale (21 novembre 2026) descrive la versione 0.2.0-alpha.14 (modulo Allineatori 0.2.0-alpha.12, motore 0.3.0-alpha.8), con le Impostazioni e la stampa diretta degli allineatori.
 
 ## Licence
 

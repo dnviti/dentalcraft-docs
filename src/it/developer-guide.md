@@ -1,6 +1,6 @@
 # DentalCraft: Guida per sviluppatori
 
-*Come si combinano i repository, come si compilano, si provano e si rilasciano, come un agente pilota l'applicazione e come contribuire. Edizione del 21 novembre 2026, per DentalCraft 0.2.0-alpha.13 (modulo Allineatori 0.2.0-alpha.12, motore 0.3.0-alpha.8).*
+*Come si combinano i repository, come si compilano, si provano e si rilasciano, come un agente pilota l'applicazione e come contribuire. Edizione del 21 novembre 2026, per DentalCraft 0.2.0-alpha.14 (modulo Allineatori 0.2.0-alpha.12, motore 0.3.0-alpha.8).*
 
 > **Non è un dispositivo medico.** DentalCraft è software per la ricerca e la progettazione. Non è certificato per l'uso clinico, e nulla in questa guida lo cambia.
 

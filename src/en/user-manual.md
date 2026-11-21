@@ -1,6 +1,6 @@
 # DentalCraft User Manual
 
-*Planning clear-aligner treatments with the Aligners module: from scan to printed aligner. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.13 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8), which adds Settings with the "Advanced options and parameters" switch and direct printing on the Elegoo Saturn 4 Ultra 16K.*
+*Planning clear-aligner treatments with the Aligners module: from scan to printed aligner. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.14 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8), which adds Settings with the "Advanced options and parameters" switch and direct printing on the Elegoo Saturn 4 Ultra 16K.*
 
 > **Important: not a medical device.** DentalCraft is not a certified medical device. It has no CE marking, no FDA clearance and no clinical validation. Do not use it on patients or for clinical decisions. Every plan it produces must be checked by a qualified clinician, and every printed aligner by a qualified person, before any use. Use it for evaluation, training, research and design tests only; the licence allows noncommercial use only.
 
@@ -360,7 +360,7 @@ Copy these from the maker's sheet for this printer, never from another resin. De
 - no support may touch the fitting side or its rim (**A support would touch the inside of an aligner**);
 - no region of any layer may start in mid-air without a support (**A part of an aligner would print in mid-air without a support**).
 
-**How the fitting side is known.** The preparation has to know which surface of a shell is the fitting side. The command `print.prepare` takes it from the **stage model**, the model of the arch at that stage that **Export for printing** writes in the folder `modelli_termoformatura`, next to `stampa_resina`: the part of the shell that lies on its model (the clearance and the engraved text included) is the fitting side, and a passive aligner uses the model of the last stage. If less than 30 % of the shell lies on its model (another stage, or another frame), the preparation stops with the code `print-model-mismatch` and writes nothing. A part that does not come from an export gets its fitting side from its shape. The print window of this version always works it out from the shape of each shell.
+**How the fitting side is known.** The preparation has to know which surface of a shell is the fitting side, so that no support touches it. For a shell of an export, the print window and the command `print.prepare` take it from the **stage model**: the model of the arch at that stage that **Export for printing** writes in the folder `modelli_termoformatura`, next to `stampa_resina`, paired with the shell through the export's manifest (a passive aligner uses the model of the last stage). The part of the shell that lies on its model (the clearance and the engraved text included) is the fitting side, and the window says so: **Fitting side taken from each aligner's model in the export: the supports stay on the outer side.** If less than 30 % of a shell lies on its model (another stage, or another position), the preparation stops, writes nothing and says **An aligner does not match its model in the export (another stage or another position). Export the aligners again.** (code `print-model-mismatch`). A loose shell that is not in an export with its models is still prepared, but its fitting side is guessed from its shape, and the window warns **Fitting side guessed from shape; export again.** with **Guessed for:** and the names of the aligners: a support could touch the side that sits on the teeth, so export the aligners again before you print them.
 
 In the advanced view **Print settings** exposes the **Tip where a support touches** (default 0.35 mm), the **Support thickness** (1.0 mm), the **Base under the supports** (1.0 mm, the thickness of the raft) and the plate spacing (**Space between aligners** 3 mm, **Space from the plate edge** 4 mm). If an aligner does not fit, reduce the spacing from the plate edge.
 
@@ -394,6 +394,7 @@ In the inspector of **Print**, **Mark…** gives **Printed**, **Failed** or **To
 |---|---|
 | **An aligner's shape cannot be printed as it is** / **file could not be read** | Export the aligners again. |
 | **A resin value is out of range** | Check the resin values (layer height 0.01 to 0.2 mm). |
+| **An aligner does not match its model in the export** | The shell and its model must come from the same export: export the aligners again. |
 | **A support would touch the inside of an aligner** / **a part would print in mid-air** | Try other support settings (advanced view). |
 | **An aligner with its supports is taller than the printer can print** | Print fewer or smaller parts on the plate; contact support if one aligner alone is too tall. |
 | **An aligner does not fit on the plate** / **The spacing leaves no room** | Reduce the spacing from the plate edge or between aligners. |

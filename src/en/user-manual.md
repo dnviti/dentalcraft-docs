@@ -1,6 +1,6 @@
 # DentalCraft User Manual
 
-*Planning clear-aligner treatments with the Aligners module: from scan to printed aligner. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.12 and the Settings and Print features that follow it.*
+*Planning clear-aligner treatments with the Aligners module: from scan to printed aligner. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.13 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8), which adds Settings with the "Advanced options and parameters" switch and direct printing on the Elegoo Saturn 4 Ultra 16K.*
 
 > **Important: not a medical device.** DentalCraft is not a certified medical device. It has no CE marking, no FDA clearance and no clinical validation. Do not use it on patients or for clinical decisions. Every plan it produces must be checked by a qualified clinician, and every printed aligner by a qualified person, before any use. Use it for evaluation, training, research and design tests only; the licence allows noncommercial use only.
 
@@ -86,7 +86,7 @@ On the first start DentalCraft asks whether it may send **anonymous diagnostic d
 
 ### 3.2 Language and theme
 
-The **EN / IT** switch at the top right of the Home screen changes the language of the whole interface at once. The theme (dark or light) is in **Settings**.
+The **EN / IT** switch at the top right of the Home screen changes the language of the whole interface at once; it is also in **Settings**, section **General**, where the theme (**Dark**, **Light** or **System**) is chosen.
 
 ### 3.3 Signing in
 
@@ -104,14 +104,14 @@ If the browser does not open, use **Reopen browser** or **Copy sign-in link** in
 
 ### 3.4 Settings and the "Advanced options and parameters" switch
 
-Open **Settings** with the gear button in the top bar of the Home screen and of the workspace, or from the account menu (**Settings…**). The dialog has four sections:
+Open **Settings** with the gear button in the top bar of the Home screen and of the workspace, or from the account menu (**Settings…**). The dialog has four sections. Every change takes effect at once and is saved; Esc, a click outside the dialog or **Close** closes it.
 
 | Section | What it holds |
 |---|---|
-| **General** | Language, theme. |
+| **General** | **Interface language** (EN / IT) and **Theme** (**Dark**, **Light**, **System**). |
 | **Workspace** | The switch **Advanced options and parameters**. |
-| **Updates** | **Check for updates at startup** and **Check now**. |
-| **Privacy** | **Send anonymous diagnostic data** (the same choice as at the first start). |
+| **Updates** | **Check for updates at startup** (on by default) and **Check now**. |
+| **Privacy** | **Send anonymous diagnostic data** (the same choice as at the first start; off until you tick it). |
 
 **Advanced options and parameters is off by default**, and the application then shows the simple view:
 
@@ -119,7 +119,7 @@ Open **Settings** with the gear button in the top bar of the Home screen and of 
 - the menu marks the step to do next with a **Next** pill, and its inspector carries a **Next step** badge, so it is always visible what to do to get to the aligners;
 - the status bar readouts, the technical settings of each function, the scan point-cloud tools and the extra print settings are hidden.
 
-Switch it **on** when you want every parameter and technical value. Values you set while it was on stay in effect when you switch it off again: switching off hides controls, it does not reset anything.
+Switch it **on** when you want every parameter and technical value. Values you set while it was on stay in effect when you switch it off again: switching off hides controls, it does not reset anything. Agents and scripts can read and change the same switch with the commands `app.settings.get` and `app.settings.set` (developer guide, section 6.6); the commands keep all their parameters whether the switch is on or off.
 
 ## 4. How the window is organised
 
@@ -305,7 +305,7 @@ Print takes the exported aligners to the **Elegoo Saturn 4 Ultra 16K**: it orien
 
 #### 5.12.1 Before you start
 
-1. Make the aligners (step 8) and run **Export for printing**. The print window reads the exported shells; without an export it says **Not exported yet: run "Export for printing" first.**
+1. Make the aligners (step 8) and run **Export for printing**. The project remembers the folder of that export: the print window reads the aligner shells from its `stampa_resina` folder. Without an export it says **Not exported yet: run "Export for printing" first.**
 2. Prepare the printer with the DENTAL 45 machine parameters (section 5.12.2).
 3. Have the resin maker's settings for the Saturn 4 Ultra 16K at hand (section 5.12.3).
 4. Have a **FAT32** USB stick (16 GB or less works best; the printer reads ASCII file names).
@@ -355,36 +355,38 @@ Copy these from the maker's sheet for this printer, never from another resin. De
 3. Check **Printer** (the profile, and that the files go to the printer on a USB stick, so no network is needed) and **Resin** (the summary of your values, or **Enter your resin's values**).
 4. Choose **Prepare the print**. The window reads the aligners, turns them, adds supports and places them on the plate, then prepares the layers of each plate.
 
-**Supports are never on the fitting side.** Each shell is oriented with its fitting side (the inner surface that touches the teeth) facing away from the plate, so resin drains and no cup forms. Supports touch only the outer side: they are small cone tips on a thin shaft over a base. Two checks run before any file is written, and a failure stops the preparation with a message naming the cause:
+**Supports are never on the fitting side.** Each shell is oriented with its fitting side (the inner surface that touches the teeth) facing away from the plate: the opening of the aligner points up, so resin drains and no cup forms. The orientation also tries tilts of up to 45° in 15° steps, which cut the thin wall obliquely and lower the force that peels each layer off the vat, and it turns the aligner so that its long side lies along the long side of the plate. Supports touch only the outer side: small cone tips (0.35 mm) on a thin shaft (1.0 mm). The shafts stand on a **raft**, a 1.0 mm base that is printed on the plate. The raft does not fill the whole area under the aligner: it follows the feet of the supports, a chamfered pad round each foot joined to its neighbours by 4 mm bands, so under a dental arch it is **U-shaped**. It saves resin and comes off together with the supports. Two checks run before any file is written, and a failure stops the preparation with a message naming the cause:
 
 - no support may touch the fitting side or its rim (**A support would touch the inside of an aligner**);
 - no region of any layer may start in mid-air without a support (**A part of an aligner would print in mid-air without a support**).
 
-In the advanced view **Print settings** exposes the **Tip where a support touches** (default 0.35 mm), the **Support thickness** (1.0 mm), the **Base under the supports** (1.0 mm) and the plate spacing (**Space between aligners** 3 mm, **Space from the plate edge** 4 mm). If an aligner does not fit, reduce the spacing from the plate edge.
+**How the fitting side is known.** The preparation has to know which surface of a shell is the fitting side. The command `print.prepare` takes it from the **stage model**, the model of the arch at that stage that **Export for printing** writes in the folder `modelli_termoformatura`, next to `stampa_resina`: the part of the shell that lies on its model (the clearance and the engraved text included) is the fitting side, and a passive aligner uses the model of the last stage. If less than 30 % of the shell lies on its model (another stage, or another frame), the preparation stops with the code `print-model-mismatch` and writes nothing. A part that does not come from an export gets its fitting side from its shape. The print window of this version always works it out from the shape of each shell.
+
+In the advanced view **Print settings** exposes the **Tip where a support touches** (default 0.35 mm), the **Support thickness** (1.0 mm), the **Base under the supports** (1.0 mm, the thickness of the raft) and the plate spacing (**Space between aligners** 3 mm, **Space from the plate edge** 4 mm). If an aligner does not fit, reduce the spacing from the plate edge.
 
 The plate preview shows each plate from above (**Plate n of N**, **Previous plate**, **Next plate**) with the estimates: the aligners on the plate, the layers, the print time (about; it includes the heating wait) and the resin. **Resin to pour in the vat (at least)** also takes the vat's minimum level into account.
 
 #### 5.12.5 Save to a USB stick
 
-1. Choose **Save print files…** and select the USB stick (FAT32). Each plate becomes one file, `plate_01.goo`, `plate_02.goo`, and so on, in the GOO format of Elegoo printers.
+1. Choose **Save print files…** and select the USB stick (FAT32). Each plate becomes one file, `plate_01.goo`, `plate_02.goo`, and so on, in the GOO format of Elegoo printers. The aligners on the saved plates are recorded as **Sent to the printer** (section 5.12.6).
 2. **Save the plate with its supports as STL…** writes the same plates as STL files, for inspection.
 3. When the files are saved the window says **Put the USB stick in the printer, choose the file on its screen and start the print.** Do so on the printer.
 4. After printing: remove the supports from the outer side, wash and cure as the resin maker says, then check the wall thickness and the fit before use. Washing and curing are manual lab steps outside DentalCraft.
 
 #### 5.12.6 The printed and missing tracking
 
-DentalCraft keeps, in the project, the print status of every aligner (arch, number, passive or active), so you always see which are printed and which remain.
+DentalCraft keeps, in the project, the print status of every aligner of the series (arch, number, passive or active, written as its id: `SUP-03` is upper aligner 3, `INF-12-P` is lower passive aligner 12), so you always see which are printed and which remain. The leaf **Print** of the group **Production** shows them: **Printed x of y**, **Still to print: n**, and one row per aligner. Selecting the leaf only shows this; its button **Prepare print…** opens the print window.
 
-| Status | Meaning |
+| Status (inspector / print window) | Meaning |
 |---|---|
 | **To print** | Never marked. |
-| **Being prepared** (queued) | On a prepared plate, not saved yet. |
-| **Sent to the printer** (sent) | The plate file was saved for the printer. |
+| **Queued** / **Being prepared** | Put in the queue for a plate. The print window does not set it itself: it goes straight to **Sent** when you save the files; an agent can set it with `aligners.print.mark`. |
+| **Sent** / **Sent to the printer** | The plate file was saved for the printer. |
 | **Printed** | You confirmed it. DentalCraft never marks an aligner printed by itself; only your confirmation, or a printer's report that the job finished, does. |
 | **Failed** | The print failed. |
 | **To print again** | Printed, but broken or lost: it goes back on the list. |
 
-In the inspector of **Print**, **Mark…** gives **Printed**, **Failed** or **To print again** to an aligner; each mark is one undoable change saved with the project. The print window preselects what is still missing the next time.
+In the inspector of **Print**, **Mark…** gives **Printed**, **Failed** or **To print again** to an aligner; each mark is one undoable change saved with the project. The marks are facts about the aligners you made: they stay when a scan is replaced or the series is computed again. A mark that does not make sense is refused and nothing changes (for example **Printed** on an aligner already printed; an aligner leaves **Printed** only when you ask to print it again). The print window preselects what is still missing the next time.
 
 #### 5.12.7 If the preparation fails
 
@@ -487,5 +489,7 @@ The **Support** screen (from Home) has the manual, a ticket form, a diagnostics 
 | IPR | Interproximal reduction: a small amount of enamel removed between neighbouring teeth to make room. |
 | Little index | A measure of the irregularity of the front teeth. |
 | Passive aligner | An aligner that no longer moves the teeth: it holds them while the other arch finishes a longer series. |
+| Raft | The thin base printed on the plate under the supports. It follows the feet of the supports, so under an arch it is U-shaped. |
 | Stage | One step of the movement; one aligner per stage. |
+| Stage model | The model of an arch at one stage of the movement, which an aligner of that stage is built on. Export for printing writes it next to the aligner shells. |
 | Tooth mark | The point DentalCraft puts on each tooth when it finds the teeth. |

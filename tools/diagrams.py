@@ -259,8 +259,8 @@ def printpipe(lang: str):
     T = {
         "en": dict(
             title="The print pipeline: orient, supports, nest, slice, GOO",
-            src=["Export for printing", "shells + face labels"],
-            steps=[("Orient", "fitting side away\nfrom the plate"), ("Supports", "outer side only,\ntip + shaft + raft"),
+            src=["Export for printing", "shells + stage models"],
+            steps=[("Orient", "fitting side away\nfrom the plate"), ("Supports", "outer side only,\ntip + shaft + U raft"),
                    ("Nest", "plates, gap and\nmargin kept"), ("Slice", "layer runs, never a\nfull bitmap"), ("GOO V3", "one file per plate,\nMD5 and previews")],
             chk=["Hard checks", "no support contact on the fitting side", "no unsupported island in any layer", "every part fits the plate and height"],
             usb=["USB stick (FAT32)", "plate_01.goo, plate_02.goo ..."],
@@ -270,8 +270,8 @@ def printpipe(lang: str):
         ),
         "it": dict(
             title="La pipeline di stampa: orienta, supporti, disponi, affetta, GOO",
-            src=["Esporta per la stampa", "gusci + etichette delle facce"],
-            steps=[("Orienta", "lato di calzata lontano\ndalla piastra"), ("Supporti", "solo lato esterno,\npunta + fusto + base"),
+            src=["Esporta per la stampa", "gusci + modelli degli stadi"],
+            steps=[("Orienta", "lato di calzata lontano\ndalla piastra"), ("Supporti", "solo lato esterno,\npunta + fusto + zattera a U"),
                    ("Disponi", "piastre, distanza e\nmargine rispettati"), ("Affetta", "strati a tratti, mai\nuna bitmap intera"), ("GOO V3", "un file per piastra,\nMD5 e anteprime")],
             chk=["Controlli obbligatori", "nessun supporto sul lato di calzata", "nessuna isola senza supporto in uno strato", "ogni pezzo sta su piastra e altezza"],
             usb=["Chiavetta USB (FAT32)", "plate_01.goo, plate_02.goo ..."],

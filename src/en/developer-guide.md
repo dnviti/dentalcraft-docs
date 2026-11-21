@@ -1,6 +1,6 @@
 # DentalCraft Developer Guide
 
-*How the repositories fit together, how to build, test and release them, how an agent drives the application, and how to contribute. Edition of 21 November 2026.*
+*How the repositories fit together, how to build, test and release them, how an agent drives the application, and how to contribute. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.13 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8).*
 
 > **Not a medical device.** DentalCraft is research and design software. It is not certified for clinical use, and nothing in this guide changes that.
 
@@ -52,7 +52,7 @@ All repositories are under `https://github.com/dnviti/`.
 | `dc-session` | The headless engine session: open project, undo, step history, jobs and the **command registry** (`execute`, `batch`, `describe`, `inspect`). |
 | `dc-mcp` | A hand-written JSON-RPC MCP server over stdio, behind a `Host` trait (headless session or running app). |
 | `dc-scanner`, `dc-ble`, `dc-turntable` | 3D scanner connector: device backends, live tracking, TSDF fusion, point-cloud and mesh editing; Bluetooth LE links; turntables. |
-| `dc-print` | Resin printing: printer profiles, machine parameters, orientation, supports, nesting, slicer and the GOO V3 writer and reader, the `print.*` commands. |
+| `dc-print` | Resin printing: printer profiles, the DENTAL 45 machine parameters, orientation (fitting side from the stage model or the geometry), supports on a U-shaped raft, nesting, the slicer, the GOO V3 writer and reader, and the `print.*` commands. |
 | `dc-raster` | CPU rasteriser for headless renders and screenshots. |
 | `dc-i18n`, `dc-theme` | Fluent localisation (English, Italian, switchable at run time) and design tokens. |
 
@@ -150,7 +150,7 @@ The superproject's `.cargo/config.toml` enables `sccache` and the `mold` linker 
 `dentalcraft-aligners` and `dentalcraft-app` depend on the other repositories as git dependencies, pinned by tag:
 
 ```toml
-dc-case = { git = "https://github.com/dnviti/dentalcraft-core.git", tag = "v0.3.0-alpha.7" }
+dc-case = { git = "https://github.com/dnviti/dentalcraft-core.git", tag = "v0.3.0-alpha.8" }
 ```
 
 To work on core and a consumer at the same time without publishing anything, the superproject's `.cargo/config.toml` redirects those git sources to the working trees:
@@ -286,9 +286,9 @@ Command ids are dotted and stable. The groups are:
 |---|---|
 | `project.*`, `case.*`, `edit.*`, `steps.*`, `view.set` | Project lifecycle, scan import and roles, undo and redo, step history, the view. |
 | `scan.*`, `turntable.*` | The scanner connector and the turntable (including `scan.auto` and `turntable.calibrate`). |
-| `print.*` | Printer profiles and machine parameters, and the preparation of print plates (`print.prepare`). |
-| `aligners.*` | The Aligners module: the pipeline, its settings (`aligners.settings.*`), manual tools, review, production, export, follow-up, tracking of printed aligners (`aligners.print.*`). |
-| `app.*` | Application commands: update, diagnostics, settings (`app.settings.get`, `app.settings.set {advanced}`), window layout and view. Over the bridge only where they need a window. |
+| `print.*` | Printer profiles and machine parameters, and the preparation of print plates (`print.prepare`): section 6.6. |
+| `aligners.*` | The Aligners module: the pipeline, its settings (`aligners.settings.*`), manual tools, review, production, export, follow-up, the leaf Print and the tracking of printed aligners (`aligners.production.print`, `aligners.print.*`: section 6.6). |
+| `app.*` | Application commands: update, diagnostics, settings (`app.settings.get`, `app.settings.set {advanced}`: section 6.6), window layout and view. Over the bridge only where they need a window. |
 
 Appendix A lists every command id and label of this edition; `dentalcraft-cli describe <id>` gives the parameters. The leaves of the menu are the commands `aligners.<path>`: **Run everything automatically** is `aligners.auto`, **Find the teeth** is `aligners.teeth.find`, **Export for printing** is `aligners.output.export-all`.
 
@@ -298,6 +298,31 @@ Appendix A lists every command id and label of this edition; `dentalcraft-cli de
 - A command that changes the case is **one undo step**. Refusals are errors with a stable kebab-case code, and change nothing.
 - Long work runs as a job with progress and cancellation, and leaves the case as it was when cancelled.
 - Every command that can change the case must be classified in the workspace save test (`dc-workspace/tests/save.rs`), which runs it through the workspace, saves, reopens and compares the case.
+
+### 6.6 The print, print tracking and settings commands
+
+**`print.*`** are session commands of core (`dc-print`): they are in the CLI, in MCP and on the bridge alike. They work on files, not on the case, and change nothing in it. In the application each runs on a thread of its own and answers when it ends (`print.prepare` takes minutes), while the window keeps drawing.
+
+| Command | Parameters | Result |
+|---|---|---|
+| `print.profiles` | none | `{profiles}`: for each printer `id`, `machine_name`, `resolution_x`, `resolution_y`, `pixel_pitch_x_um`, `pixel_pitch_y_um`, `build_mm` (X, Y, Z; Z is the print height limit), `layer_min_um`, `layer_max_um`, `mirror_x`, `mirror_y` and `machine`, a summary of its machine parameters (`entries` is their count). Built in: `saturn-4-ultra-16k` (Elegoo Saturn 4 Ultra 16K, machine parameters DENTAL 45). |
+| `print.machine-params` | `profile?` (default `saturn-4-ultra-16k`) | The machine parameters as the firmware's `M5000` file sets them: `name`, `source`, `z_travel_mm` (230), `tilt_angle_deg` (140), `tank_target_c` and `preheat_target_c` (45), `heat_cycle_limit_min` (35), `light_source` (`combined`), `light_pwm` (255), `vat_max_ml` (870), `vat_min_level_mm` (4), `vat_size_mm`, `resin_estimate`, `slow` and `fast` (the tilt release modes), `estimate_correction_ms`, `first_layers_rest_s`, `saved`, and `entries`: all 160 values of the file, each with group, axis, letter, value, text and the comment of its line. |
+| `print.prepare` | exactly one of `inputs` (shell files, STL, OBJ or PLY) and `dir` (every `.stl` of a folder, in name order, for example `stampa_resina`); `out_dir` (a folder other than `dir`); the resin values `layer_um`, `exposure_s`, `bottom_exposure_s`, `bottom_layers`, `rest_s`, `resin_name`, `density_g_ml`, **every one required**; `profile?`, `pwm?` (255), `gap_mm?` (3), `margin_mm?` (4) | Orients every part, adds supports and a raft, checks them, nests the parts on as few plates as possible, slices each plate and writes `plate_NN.goo`, `plate_NN.stl` and `summary.json` into `out_dir` (each through a `.tmp` file, synced and renamed). It returns the summary: the totals (plates, parts, volume, weight, estimated time), each plate and, for each part, its plan (plate, orientation, contacts, quarter turns, offset, height, and `fitting_source`: `model` when the fitting side was read from the stage model, `geometry` otherwise). |
+
+A missing resin value is refused before anything is read (`print-no-resin-preset`, which lists the missing names): no value is ever guessed. The codes of the print commands are stable and the message starts with the code: `invalid-params`, `print-no-resin-preset`, `print-unknown-profile`, `print-no-machine-params`, `print-no-inputs`, `print-read`, `print-write`, `print-model-mismatch`, `print-no-parts`, `print-invalid-part`, `print-invalid-settings`, `print-fitting-contact`, `print-island-unsupported`, `print-part-too-tall`, `print-part-too-big`, `print-invalid-footprint`, `print-invalid-layout`, `print-vat-overflow`, `print-file`, `print-io`, `print-mesh` and `print-cancelled`. A call that has to change (parameters, resin values, profile, inputs, a model mismatch, invalid settings or layout) is an invalid command; the other failures are failed commands; a cancelled run is a cancelled command, and a failed or cancelled run leaves no partial file.
+
+**`aligners.print.*`** are commands of the Aligners module (`dca-module`):
+
+| Command | Parameters | What it does |
+|---|---|---|
+| `aligners.production.print` | `arch?` (`all`, `upper`, `lower`) | The leaf **Print**. It lists the aligners to print and changes nothing. Output: `print_parts` (per aligner: id such as `SUP-03` or `INF-12-P`, name, arch, number, passive flag, the shell file of the last export or `null`, status), `export_dir` (the folder of the last **Export for printing**, or `null`), `printed`, `missing`. In the application its output opens the print window. |
+| `aligners.print.parts` | `arch?` | The same aligners, with their status and record (when, by whom, job, reason). Output: `parts`, `export_dir`. |
+| `aligners.print.status` | `arch?` | `total`, `printed`, `missing` (every aligner not printed yet), `by_status`, `printed_ids`, `missing_ids`. |
+| `aligners.print.mark` | `ids`, `status` (`queued`, `sent`, `printed`, `failed`, `reprint`), `by?` (`user` by default, `printer`, `app`), `job?`, `reason?` | One undoable change, all or none: an aligner whose status cannot change that way refuses the whole mark (the transitions are in the architecture, section 7.3). Output: `marked`, `summary`. |
+
+The statuses and the transition function live in `dca-model` (`print_transition`), with two Kani laws: only the user (or the printer, from `sent`) marks an aligner printed, and a printed aligner leaves `printed` only for `reprint` by the user. The records are in the module state (schema version 2: `prints`, `export_dir`); a state of schema 1 migrates by getting both empty.
+
+**`app.settings.get`** and **`app.settings.set`** (source `app`, in `dc_diagnostics::settings`) drive the Settings dialog. `app.settings.get` answers `{advanced, language, theme, check_updates, diagnostics}` (defaults: `false`, the system language, `dark`, `true`, `null` until the user chose). `app.settings.set` takes `advanced` (true or false) and nothing else: another key, or a value that is not a boolean, is refused. On the bridge the window changes at once and the setting is saved in `settings.json`; in `dentalcraft-cli` (headless, also over MCP) the command writes the app's settings file, keeps its other keys, and the application reads it at its next start. The commands keep all their parameters whether the switch is on or off: **advanced** hides controls, it never removes a parameter from a command.
 
 ## 7. The `.dcprj` format
 
@@ -356,7 +381,7 @@ Build interface from the `dc-ui` widgets and tokens, not ad-hoc styling. The des
 
 ### 8.4 Settings and the advanced switch
 
-`Settings.advanced` (default off, saved in `settings.json`) is read by every inspector through `dc_module_api::advanced_ui(ctx)`. Controls are classified: ESSENTIAL ones always show; the rest only with advanced on. Values that become hidden stay in effect: switching off hides, it never resets. The next step is marked with a "Next" pill in the menu and a badge in the inspector.
+`Settings.advanced` (default off, saved in `settings.json`) is set from the **Settings** dialog (`dc-app`, sections General, Workspace, Updates, Privacy; every change is saved at once), and the shell hands it to every screen each frame with `dc_module_api::set_advanced_ui(ctx, on)`. Inspectors, the scan popup and the print popup read it through `dc_module_api::advanced_ui(ctx)`. Controls are classified: ESSENTIAL ones always show; the rest only with advanced on (for the print popup, the **Print settings**: support tip, thickness, raft, plate spacing). Values that become hidden stay in effect: switching off hides, it never resets. In the simple view the next step is marked with a **Next** pill in the menu (`ws-menu-next`) and a **Next step** badge in the inspector (`ws-next-step`). The agent commands are `app.settings.get` and `app.settings.set` (section 6.6).
 
 ## 9. Formal verification with Kani
 
@@ -369,11 +394,11 @@ Build interface from the `dc-ui` widgets and tokens, not ad-hoc styling. The des
 - Prove pure logic, not I/O. Maps of closures, `HashMap`, `format!`, ZIP, BLAKE3 and `serde_json` are out of reach: harness the small pure helper, or use `proptest`.
 - Before merging a change to code covered by laws, run Kani on the committed ref together with the local CI.
 
-As of this edition there are 35 harnesses (core 19, aligners 13, app 3): FDI numbering rules, voxel key packing, queue keys, schedule dates and intervals, the short-way rotation (no 360° spin), arch membership of every tooth, timeline bounds and the 60 FPS cap.
+As of this edition there are 38 harnesses (core 19, aligners 15, app 4): FDI numbering rules, voxel key packing, queue keys, schedule dates and intervals, the short-way rotation (no 360° spin), arch membership of every tooth, the print tracking (printed only by the user or the printer; a printed aligner leaves `printed` only for a reprint), timeline bounds and the 60 FPS cap. The GOO run-length encoding round trip of `dc-print` is sampled with proptest instead: Kani does not finish on it.
 
 ## 10. Testing strategy
 
-- **Unit tests** per crate; **proptest** for topology and `.dcprj`.
+- **Unit tests** per crate; **proptest** for topology, `.dcprj` and the GOO run-length encoding. The print engine has tests for each stage (orientation, supports and the hard checks, nesting, slicing, the file writer and reader, the machine parameters, the whole job) and for the `print.*` commands through a headless session.
 - **Golden oracle tests:** the Rust algorithms are compared with the original Blender add-on on fixtures and on real scans, with tolerances (vertices Hausdorff below 0.01 mm, labels at least 99 %, poses within 0.01 mm and 0.05°, diagnosis relative error below 1e-3). Where the Rust code intentionally deviates (for example the arch-end check of *Find the teeth*), the deviation is recorded and tested.
 - **Headless UI logic** with `egui_kittest`: every screen in both languages, key parity, the settings, the workspace save test. wgpu snapshot tests need a GPU and run locally only.
 - **Behaviour that regressed once gets a test:** adjacent teeth stay separate, detection stops at the last molars, teeth never spin through 360°, a bite never visibly interpenetrates, the session survives a restart.

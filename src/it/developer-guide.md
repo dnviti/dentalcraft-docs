@@ -1,6 +1,6 @@
 # DentalCraft: Guida per sviluppatori
 
-*Come si combinano i repository, come si compilano, si provano e si rilasciano, come un agente pilota l'applicazione e come contribuire. Edizione del 21 novembre 2026.*
+*Come si combinano i repository, come si compilano, si provano e si rilasciano, come un agente pilota l'applicazione e come contribuire. Edizione del 21 novembre 2026, per DentalCraft 0.2.0-alpha.13 (modulo Allineatori 0.2.0-alpha.12, motore 0.3.0-alpha.8).*
 
 > **Non è un dispositivo medico.** DentalCraft è software per la ricerca e la progettazione. Non è certificato per l'uso clinico, e nulla in questa guida lo cambia.
 
@@ -52,7 +52,7 @@ Tutti i repository sono sotto `https://github.com/dnviti/`.
 | `dc-session` | La sessione del motore senza interfaccia: progetto aperto, annullamento, cronologia dei passi, lavori e il **registro dei comandi** (`execute`, `batch`, `describe`, `inspect`). |
 | `dc-mcp` | Un server MCP JSON-RPC scritto a mano su stdio, dietro un trait `Host` (sessione senza interfaccia o app in esecuzione). |
 | `dc-scanner`, `dc-ble`, `dc-turntable` | Connettore dello scanner 3D: backend dei dispositivi, tracciamento in tempo reale, fusione TSDF, modifica di nuvole di punti e mesh; collegamenti Bluetooth LE; piatti rotanti. |
-| `dc-print` | Stampa in resina: profili delle stampanti, parametri macchina, orientamento, supporti, disposizione, affettatrice e scrittore e lettore GOO V3, comandi `print.*`. |
+| `dc-print` | Stampa in resina: profili delle stampanti, i parametri macchina DENTAL 45, orientamento (lato di calzata dal modello dello stadio o dalla geometria), supporti su una zattera a U, disposizione, affettatrice, scrittore e lettore GOO V3 e i comandi `print.*`. |
 | `dc-raster` | Rasterizzatore su CPU per rendering e schermate senza interfaccia. |
 | `dc-i18n`, `dc-theme` | Localizzazione Fluent (inglese, italiano, commutabile durante l'esecuzione) e token di design. |
 
@@ -150,7 +150,7 @@ Il `.cargo/config.toml` del superprogetto abilita `sccache` e il linker `mold` p
 `dentalcraft-aligners` e `dentalcraft-app` dipendono dagli altri repository come dipendenze git, fissate per tag:
 
 ```toml
-dc-case = { git = "https://github.com/dnviti/dentalcraft-core.git", tag = "v0.3.0-alpha.7" }
+dc-case = { git = "https://github.com/dnviti/dentalcraft-core.git", tag = "v0.3.0-alpha.8" }
 ```
 
 Per lavorare insieme su core e un consumatore senza pubblicare nulla, il `.cargo/config.toml` del superprogetto reindirizza quelle sorgenti git verso gli alberi di lavoro:
@@ -286,9 +286,9 @@ Gli id dei comandi sono con i punti e stabili. I gruppi sono:
 |---|---|
 | `project.*`, `case.*`, `edit.*`, `steps.*`, `view.set` | Ciclo di vita del progetto, importazione e ruoli delle scansioni, annulla e ripeti, cronologia dei passi, la vista. |
 | `scan.*`, `turntable.*` | Il connettore dello scanner e il piatto rotante (compresi `scan.auto` e `turntable.calibrate`). |
-| `print.*` | Profili e parametri macchina delle stampanti, e la preparazione dei piatti di stampa (`print.prepare`). |
-| `aligners.*` | Il modulo Allineatori: la pipeline, le sue impostazioni (`aligners.settings.*`), gli strumenti manuali, revisione, produzione, esportazione, controllo successivo, tracciamento degli allineatori stampati (`aligners.print.*`). |
-| `app.*` | Comandi dell'applicazione: aggiornamento, diagnostica, impostazioni (`app.settings.get`, `app.settings.set {advanced}`), disposizione e vista della finestra. Sul ponte solo dove serve una finestra. |
+| `print.*` | Profili e parametri macchina delle stampanti, e la preparazione dei piatti di stampa (`print.prepare`): sezione 6.6. |
+| `aligners.*` | Il modulo Allineatori: la pipeline, le sue impostazioni (`aligners.settings.*`), gli strumenti manuali, revisione, produzione, esportazione, controllo successivo, la foglia Stampa e il tracciamento degli allineatori stampati (`aligners.production.print`, `aligners.print.*`: sezione 6.6). |
+| `app.*` | Comandi dell'applicazione: aggiornamento, diagnostica, impostazioni (`app.settings.get`, `app.settings.set {advanced}`: sezione 6.6), disposizione e vista della finestra. Sul ponte solo dove serve una finestra. |
 
 L'appendice A elenca ogni id e etichetta dei comandi di questa edizione; `dentalcraft-cli describe <id>` dà i parametri. Le foglie del menu sono i comandi `aligners.<percorso>`: **Esegui tutto in automatico** è `aligners.auto`, **Trova i denti** è `aligners.teeth.find`, **Esporta per la stampa** è `aligners.output.export-all`.
 
@@ -298,6 +298,31 @@ L'appendice A elenca ogni id e etichetta dei comandi di questa edizione; `dental
 - Un comando che cambia il caso è **un solo passo annullabile**. I rifiuti sono errori con un codice stabile in kebab-case, e non cambiano nulla.
 - Il lavoro lungo gira come un lavoro con avanzamento e annullamento, e se annullato lascia il caso com'era.
 - Ogni comando che può cambiare il caso va classificato nel test di salvataggio dell'area di lavoro (`dc-workspace/tests/save.rs`), che lo esegue attraverso l'area di lavoro, salva, riapre e confronta il caso.
+
+### 6.6 I comandi di stampa, tracciamento della stampa e impostazioni
+
+**`print.*`** sono comandi di sessione del core (`dc-print`): ci sono nella CLI, in MCP e sul ponte allo stesso modo. Lavorano su file, non sul caso, e non vi cambiano nulla. Nell'applicazione ognuno gira su un thread proprio e risponde quando finisce (`print.prepare` richiede minuti), mentre la finestra continua a disegnare.
+
+| Comando | Parametri | Risultato |
+|---|---|---|
+| `print.profiles` | nessuno | `{profiles}`: per ogni stampante `id`, `machine_name`, `resolution_x`, `resolution_y`, `pixel_pitch_x_um`, `pixel_pitch_y_um`, `build_mm` (X, Y, Z; Z è l'altezza massima di stampa), `layer_min_um`, `layer_max_um`, `mirror_x`, `mirror_y` e `machine`, un riepilogo dei suoi parametri macchina (`entries` è il loro numero). Incorporato: `saturn-4-ultra-16k` (Elegoo Saturn 4 Ultra 16K, parametri macchina DENTAL 45). |
+| `print.machine-params` | `profile?` (predefinito `saturn-4-ultra-16k`) | I parametri macchina come li imposta il file `M5000` del firmware: `name`, `source`, `z_travel_mm` (230), `tilt_angle_deg` (140), `tank_target_c` e `preheat_target_c` (45), `heat_cycle_limit_min` (35), `light_source` (`combined`), `light_pwm` (255), `vat_max_ml` (870), `vat_min_level_mm` (4), `vat_size_mm`, `resin_estimate`, `slow` e `fast` (le modalità di distacco), `estimate_correction_ms`, `first_layers_rest_s`, `saved`, ed `entries`: tutti i 160 valori del file, ciascuno con gruppo, asse, lettera, valore, testo e il commento della sua riga. |
+| `print.prepare` | esattamente uno tra `inputs` (file dei gusci, STL, OBJ o PLY) e `dir` (ogni `.stl` di una cartella, in ordine di nome, per esempio `stampa_resina`); `out_dir` (una cartella diversa da `dir`); i valori della resina `layer_um`, `exposure_s`, `bottom_exposure_s`, `bottom_layers`, `rest_s`, `resin_name`, `density_g_ml`, **tutti obbligatori**; `profile?`, `pwm?` (255), `gap_mm?` (3), `margin_mm?` (4) | Orienta ogni pezzo, aggiunge supporti e zattera, li controlla, dispone i pezzi sul minor numero possibile di piatti, affetta ogni piatto e scrive `plate_NN.goo`, `plate_NN.stl` e `summary.json` in `out_dir` (ognuno passando da un file `.tmp`, sincronizzato e rinominato). Restituisce il riepilogo: i totali (piatti, pezzi, volume, peso, tempo stimato), ogni piatto e, per ogni pezzo, il suo piano (piatto, orientamento, contatti, quarti di giro, spostamento, altezza e `fitting_source`: `model` se il lato di calzata è stato letto dal modello dello stadio, `geometry` altrimenti). |
+
+Un valore della resina mancante viene rifiutato prima di leggere qualunque cosa (`print-no-resin-preset`, che elenca i nomi mancanti): nessun valore è mai indovinato. I codici dei comandi di stampa sono stabili e il messaggio comincia con il codice: `invalid-params`, `print-no-resin-preset`, `print-unknown-profile`, `print-no-machine-params`, `print-no-inputs`, `print-read`, `print-write`, `print-model-mismatch`, `print-no-parts`, `print-invalid-part`, `print-invalid-settings`, `print-fitting-contact`, `print-island-unsupported`, `print-part-too-tall`, `print-part-too-big`, `print-invalid-footprint`, `print-invalid-layout`, `print-vat-overflow`, `print-file`, `print-io`, `print-mesh` e `print-cancelled`. Una chiamata da cambiare (parametri, valori della resina, profilo, ingressi, un modello non corrispondente, impostazioni o disposizione non valide) è un comando non valido; gli altri fallimenti sono comandi falliti; un'esecuzione annullata è un comando annullato, e un'esecuzione fallita o annullata non lascia file parziali.
+
+**`aligners.print.*`** sono comandi del modulo Allineatori (`dca-module`):
+
+| Comando | Parametri | Cosa fa |
+|---|---|---|
+| `aligners.production.print` | `arch?` (`all`, `upper`, `lower`) | La foglia **Stampa**. Elenca gli allineatori da stampare e non cambia nulla. Risultato: `print_parts` (per allineatore: id come `SUP-03` o `INF-12-P`, nome, arcata, numero, flag di passivo, il file del guscio dell'ultima esportazione o `null`, stato), `export_dir` (la cartella dell'ultima **Esporta per la stampa**, o `null`), `printed`, `missing`. Nell'applicazione il suo risultato apre la finestra di stampa. |
+| `aligners.print.parts` | `arch?` | Gli stessi allineatori, con stato e record (quando, da chi, lavoro, motivo). Risultato: `parts`, `export_dir`. |
+| `aligners.print.status` | `arch?` | `total`, `printed`, `missing` (ogni allineatore non ancora stampato), `by_status`, `printed_ids`, `missing_ids`. |
+| `aligners.print.mark` | `ids`, `status` (`queued`, `sent`, `printed`, `failed`, `reprint`), `by?` (`user` in partenza, `printer`, `app`), `job?`, `reason?` | Una sola modifica annullabile, tutto o niente: un allineatore il cui stato non può cambiare così fa rifiutare tutto il segno (le transizioni sono nell'architettura, sezione 7.3). Risultato: `marked`, `summary`. |
+
+Gli stati e la funzione di transizione stanno in `dca-model` (`print_transition`), con due leggi Kani: solo l'utente (o la stampante, da `sent`) segna un allineatore come stampato, e un allineatore stampato esce da `printed` solo verso `reprint` per volontà dell'utente. I record stanno nello stato del modulo (schema versione 2: `prints`, `export_dir`); uno stato di schema 1 si migra con entrambi vuoti.
+
+**`app.settings.get`** e **`app.settings.set`** (sorgente `app`, in `dc_diagnostics::settings`) pilotano la finestra Impostazioni. `app.settings.get` risponde `{advanced, language, theme, check_updates, diagnostics}` (valori predefiniti: `false`, la lingua del sistema, `dark`, `true`, `null` finché l'utente non sceglie). `app.settings.set` accetta `advanced` (vero o falso) e nient'altro: un'altra chiave, o un valore che non è booleano, viene rifiutato. Sul ponte la finestra cambia subito e l'impostazione è salvata in `settings.json`; in `dentalcraft-cli` (senza finestra, anche via MCP) il comando scrive il file delle impostazioni dell'applicazione, ne mantiene le altre chiavi, e l'applicazione lo legge al successivo avvio. I comandi mantengono tutti i loro parametri con l'interruttore attivo o no: **avanzate** nasconde controlli, non toglie mai un parametro a un comando.
 
 ## 7. Il formato `.dcprj`
 
@@ -356,7 +381,7 @@ Costruisci l'interfaccia con i widget e i token di `dc-ui`, non con stili improv
 
 ### 8.4 Impostazioni e interruttore avanzato
 
-`Settings.advanced` (disattivato in partenza, salvato in `settings.json`) è letto da ogni ispettore tramite `dc_module_api::advanced_ui(ctx)`. I controlli sono classificati: quelli ESSENTIAL si vedono sempre; gli altri solo con le opzioni avanzate attive. I valori che diventano nascosti restano in vigore: disattivare nasconde, non azzera mai. Il passo successivo è segnato da una targhetta «Prossimo» nel menu e da un contrassegno nell'ispettore.
+`Settings.advanced` (disattivato in partenza, salvato in `settings.json`) si imposta dalla finestra **Impostazioni** (`dc-app`, sezioni Generale, Area di lavoro, Aggiornamenti, Privacy; ogni modifica è salvata subito), e la shell lo consegna a ogni schermata a ogni fotogramma con `dc_module_api::set_advanced_ui(ctx, on)`. Ispettori, finestra di scansione e finestra di stampa lo leggono con `dc_module_api::advanced_ui(ctx)`. I controlli sono classificati: quelli ESSENTIAL si vedono sempre; gli altri solo con le opzioni avanzate attive (per la finestra di stampa, le **Impostazioni di stampa**: punta del supporto, spessore, zattera, spazi sul piatto). I valori che diventano nascosti restano in vigore: disattivare nasconde, non azzera mai. Nella vista semplice il passo successivo è segnato da una targhetta **Avanti** nel menu (`ws-menu-next`) e da un contrassegno **Prossimo passo** nell'ispettore (`ws-next-step`). I comandi per gli agenti sono `app.settings.get` e `app.settings.set` (sezione 6.6).
 
 ## 9. Verifica formale con Kani
 
@@ -369,11 +394,11 @@ Costruisci l'interfaccia con i widget e i token di `dc-ui`, non con stili improv
 - Prova la logica pura, non l'I/O. Mappe di closure, `HashMap`, `format!`, ZIP, BLAKE3 e `serde_json` sono fuori portata: prova il piccolo helper puro, oppure usa `proptest`.
 - Prima di fare il merge di una modifica a codice coperto da leggi, esegui Kani sul ref committato insieme alla CI locale.
 
-In questa edizione ci sono 35 armature (core 19, aligners 13, app 3): regole della numerazione FDI, impacchettamento delle chiavi dei voxel, chiavi di coda, date e intervalli del calendario, la rotazione per la via breve (nessun giro di 360°), appartenenza di ogni dente a un'arcata, limiti della linea del tempo e il limite di 60 FPS.
+In questa edizione ci sono 38 armature (core 19, aligners 15, app 4): regole della numerazione FDI, impacchettamento delle chiavi dei voxel, chiavi di coda, date e intervalli del calendario, la rotazione per la via breve (nessun giro di 360°), appartenenza di ogni dente a un'arcata, il tracciamento della stampa (stampato solo dall'utente o dalla stampante; un allineatore stampato esce da `printed` solo per una ristampa), limiti della linea del tempo e il limite di 60 FPS. La codifica a lunghezze di corsa del GOO di `dc-print` è invece campionata con proptest: Kani non la porta a termine.
 
 ## 10. Strategia di test
 
-- **Test unitari** per crate; **proptest** per topologia e `.dcprj`.
+- **Test unitari** per crate; **proptest** per topologia, `.dcprj` e codifica a lunghezze di corsa del GOO. Il motore di stampa ha test per ogni fase (orientamento, supporti e controlli obbligatori, disposizione, affettatura, scrittore e lettore dei file, parametri macchina, il lavoro intero) e per i comandi `print.*` attraverso una sessione senza finestra.
 - **Test con oracolo di riferimento:** gli algoritmi Rust vengono confrontati con il componente aggiuntivo Blender originale su fixture e su scansioni reali, con tolleranze (Hausdorff dei vertici sotto 0,01 mm, etichette almeno al 99 %, pose entro 0,01 mm e 0,05°, errore relativo della diagnosi sotto 1e-3). Dove il codice Rust si discosta di proposito (per esempio il controllo dei capi dell'arcata di *Trova i denti*), lo scostamento è registrato e provato.
 - **Logica dell'interfaccia senza finestra** con `egui_kittest`: ogni schermata in entrambe le lingue, parità delle chiavi, le impostazioni, il test di salvataggio dell'area di lavoro. I test di istantanee wgpu richiedono una GPU e girano solo in locale.
 - **Un comportamento che si è già rotto una volta ha un test:** denti adiacenti restano separati, il riconoscimento si ferma agli ultimi molari, i denti non fanno mai giri di 360°, un morso non si compenetra mai in modo visibile, la sessione sopravvive a un riavvio.

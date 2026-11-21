@@ -1,6 +1,6 @@
 # DentalCraft: Manuale utente
 
-*Pianificare trattamenti con allineatori trasparenti con il modulo Allineatori: dalla scansione all'allineatore stampato. Edizione del 21 novembre 2026, per DentalCraft 0.2.0-alpha.12 e per le funzioni Impostazioni e Stampa che la seguono.*
+*Pianificare trattamenti con allineatori trasparenti con il modulo Allineatori: dalla scansione all'allineatore stampato. Edizione del 21 novembre 2026, per DentalCraft 0.2.0-alpha.13 (modulo Allineatori 0.2.0-alpha.12, motore 0.3.0-alpha.8), che aggiunge le Impostazioni con l'interruttore «Opzioni e parametri avanzati» e la stampa diretta sulla Elegoo Saturn 4 Ultra 16K.*
 
 > **Importante: non è un dispositivo medico.** DentalCraft non è un dispositivo medico certificato. Non ha marcatura CE, autorizzazione FDA né validazione clinica. Non usarlo sui pazienti né per decisioni cliniche. Ogni piano che produce deve essere controllato da un clinico qualificato, e ogni allineatore stampato da una persona qualificata, prima di qualsiasi uso. Usalo solo per valutazione, formazione, ricerca e prove di progettazione; la licenza consente solo l'uso non commerciale.
 
@@ -86,7 +86,7 @@ Al primo avvio DentalCraft chiede se può inviare **dati diagnostici anonimi**. 
 
 ### 3.2 Lingua e tema
 
-L'interruttore **EN / IT** in alto a destra nella schermata Home cambia di colpo la lingua di tutta l'interfaccia. Il tema (scuro o chiaro) si sceglie nelle **Impostazioni**.
+L'interruttore **EN / IT** in alto a destra nella schermata Home cambia di colpo la lingua di tutta l'interfaccia; si trova anche nelle **Impostazioni**, sezione **Generale**, dove si sceglie il tema (**Scuro**, **Chiaro** o **Di sistema**).
 
 ### 3.3 Accedere
 
@@ -104,22 +104,22 @@ Se il browser non si apre, usa **Riapri il browser** o **Copia il link di access
 
 ### 3.4 Impostazioni e l'interruttore «Opzioni e parametri avanzati»
 
-Apri le **Impostazioni** con il pulsante a forma di ingranaggio nella barra in alto della schermata Home e dell'area di lavoro, oppure dal menu dell'account (**Impostazioni…**). La finestra ha quattro sezioni:
+Apri le **Impostazioni** con il pulsante a forma di ingranaggio nella barra in alto della schermata Home e dell'area di lavoro, oppure dal menu dell'account (**Impostazioni…**). La finestra ha quattro sezioni. Ogni modifica ha effetto subito e viene salvata; Esc, un clic fuori dalla finestra o **Chiudi** la chiudono.
 
 | Sezione | Cosa contiene |
 |---|---|
-| **Generale** | Lingua, tema. |
+| **Generale** | **Lingua dell'interfaccia** (EN / IT) e **Tema** (**Scuro**, **Chiaro**, **Di sistema**). |
 | **Area di lavoro** | L'interruttore **Opzioni e parametri avanzati**. |
-| **Aggiornamenti** | **Controlla gli aggiornamenti all'avvio** e **Controlla ora**. |
-| **Privacy** | **Invia dati diagnostici anonimi** (la stessa scelta del primo avvio). |
+| **Aggiornamenti** | **Cerca aggiornamenti all'avvio** (attivo in partenza) e **Controlla ora**. |
+| **Privacy** | **Invia dati diagnostici anonimi** (la stessa scelta del primo avvio; disattivata finché non la spunti). |
 
 **Opzioni e parametri avanzati è disattivato in partenza**, e l'applicazione mostra la vista semplice:
 
 - i pannelli laterali mostrano solo i passaggi automatici e le correzioni a mano più utili;
-- il menu segna il passo da fare dopo con la targhetta **Prossimo**, e il suo ispettore porta il contrassegno **Prossimo passo**, così è sempre evidente cosa fare per arrivare agli allineatori;
+- il menu segna il passo da fare dopo con la targhetta **Avanti**, e il suo ispettore porta il contrassegno **Prossimo passo**, così è sempre evidente cosa fare per arrivare agli allineatori;
 - sono nascosti le letture della barra di stato, le impostazioni tecniche di ogni funzione, gli strumenti della nuvola di punti dello scanner e le impostazioni di stampa aggiuntive.
 
-**Attivalo** quando vuoi tutti i parametri e tutti i valori tecnici. I valori che imposti mentre era attivo restano in vigore quando lo disattivi di nuovo: disattivare nasconde i controlli, non azzera nulla.
+**Attivalo** quando vuoi tutti i parametri e tutti i valori tecnici. I valori che imposti mentre era attivo restano in vigore quando lo disattivi di nuovo: disattivare nasconde i controlli, non azzera nulla. Agenti e script leggono e cambiano lo stesso interruttore con i comandi `app.settings.get` e `app.settings.set` (guida per sviluppatori, sezione 6.6); i comandi mantengono tutti i loro parametri, con l'interruttore attivo o no.
 
 ## 4. Come è organizzata la finestra
 
@@ -165,7 +165,7 @@ Dalla **Home** scegli **Nuovo progetto** (oppure **Apri progetto…** per un fil
 2. **Caso:**
    - **ID del caso**: il riferimento del tuo laboratorio. Il nome del file di progetto è composto da questo e dall'alias del paziente.
    - **Alias del paziente**: uno pseudonimo. **Non scrivere mai il nome del paziente**; la chiave dell'identità reale resta nel gestionale dello studio.
-   - **Arcata**: **Superiore**, **Inferiore** o **Entrambe**.
+   - **Arcata**: **Superiore**, **Inferiore** o **Entrambe le arcate**.
    - **Note per il tecnico** (facoltative).
 3. **Scansioni:** trascina file STL, PLY o OBJ, scegli **Sfoglia i file…**, oppure scegli **Scansiona** per scansionare con uno scanner 3D collegato (sezione 5.2.4). Puoi anche iniziare senza scansioni e importarle più tardi nell'area di lavoro.
 4. Il percorso del file di progetto è in fondo (**Cambia posizione**). **Crea il progetto** crea soltanto il progetto; non viene ancora elaborato nulla.
@@ -217,7 +217,7 @@ Una luce costante e diffusa dà le scansioni più pulite: il repository comprend
 
 DentalCraft controlla la propria proposta: se la numerazione desse un terzo molare dove la scansione ha solo gengiva dietro gli ultimi molari, o fondesse un dente affollato con il vicino, la proposta viene corretta invece di spostare ogni numero successivo. Il riconoscimento si ferma agli ultimi molari; non inventa mai denti oltre.
 
-**Correzioni a mano:** **Segna un dente** (clic per posizionare o spostare, Maiusc+clic per eliminare il punto più vicino), **Elimina un dente**, **Cambia il numero di un dente**, **Dente assente**, **Numera i denti in ordine** (fai clic su ogni dente a turno: `S` salta, Backspace torna indietro, Invio o Esc termina) e **Cancella tutti i punti dente**.
+**Correzioni a mano:** **Segna un dente** (clic per posizionare o spostare, Maiusc+clic per eliminare il punto più vicino), **Elimina un dente**, **Cambia il numero di un dente**, **Dente assente**, **Numera i denti in ordine** (fai clic su ogni dente a turno: `S` salta, Backspace torna indietro, Invio o Esc termina) e **Elimina tutti i punti dente**.
 
 Quando i punti cambiano, i passi che ne dipendevano vengono segnati come non aggiornati o azzerati, e un avviso li elenca. `Ctrl+Z` riporta tutto com'era.
 
@@ -233,13 +233,13 @@ I denti vicini restano denti separati: non vengono mai fusi in uno solo. Eseguir
 
 **Esegui** dà ogni dente come **solido 3D chiuso** con il suo asse e costruisce una gengiva che segue i denti. Ogni dente viene chiuso e squadrato, quindi nessuna mesh resta aperta. Richiede che i denti siano separati. La posizione finale e gli allineatori dell'arcata, se ci sono, vengono azzerati perché erano pianificati sui vecchi denti.
 
-Dopo le correzioni con il pennello, **Esegui di nuovo** ricostruisce solo i denti dell'arcata che sono cambiati; gli altri tengono i loro solidi. **Ricostruisci un dente** ricostruisce un singolo dente, e **Mostra la regione** evidenzia la regione da cui un dente è stato costruito.
+Dopo le correzioni con il pennello, **Esegui di nuovo** ricostruisce solo i denti dell'arcata che sono cambiati; gli altri tengono i loro solidi. **Ricostruisci un dente** ricostruisce un singolo dente, e **Mostra la zona** evidenzia la zona da cui un dente è stato costruito.
 
 ### 5.6 Passo 5: Analisi del caso (gruppo Diagnosi)
 
 **Esegui** calcola, per arcata: lo spazio disponibile e necessario (**Affollamento**, **Spaziatura** o **Spazio sufficiente**), l'**indice di irregolarità di Little** con la sua categoria, lo scostamento della linea mediana e lo spazio più grande; poi i **rapporti di Bolton** e un **punteggio di complessità** del caso.
 
-Le **Correzioni a mano** (**Correggi l'analisi del caso a mano**) permettono al clinico di impostare i quattro valori che può misurare da sé: affollamento o spaziatura, indice di Little, scostamento della linea mediana, spazio più grande. Una scheda che porta un valore a mano mostra il contrassegno **Include valori impostati a mano**, e la relazione di esportazione li segnala.
+Le **Correzioni a mano** (**Correggi a mano l'analisi del caso**) permettono al clinico di impostare i quattro valori che può misurare da sé: affollamento o spaziatura, indice di Little, scostamento della linea mediana, spazio più grande. Una scheda che porta un valore a mano mostra il contrassegno **Include valori impostati a mano**, e la relazione di esportazione li segnala.
 
 ### 5.7 Passo 6: Morso (gruppo Piano)
 
@@ -257,7 +257,7 @@ La relazione di registrazione mostra **Morso registrato** oppure **Morso registr
 
 **Esegui** calcola la posa finale di ogni dente con i parametri del piano, l'IPR (riduzione interprossimale) necessaria e la linea d'arcata. Con entrambe le arcate e nessun morso registrato mostra **Prima il morso** e rifiuta: esegui **Morso**, poi questo passo. Le righe del risultato nell'ispettore danno, per arcata, l'espansione, il movimento degli incisivi, l'IPR in millimetri e contatti, i denti tenuti fermi e, come avviso, **Affollamento non risolto** quando serve.
 
-**Parametri** (vista avanzata): quali **Denti** si muovono (incisivi e canini, fino ai premolari, oppure tutti) e gruppi richiudibili per **Linea d'arcata e tolleranze**, **Denti tenuti e linea mediana**, **Spazio** (ordine, espansione, avanzamento, retrazione, chiudere gli spazi), **IPR** e **Movimenti verticali**. Dopo aver cambiato i parametri, esegui di nuovo il passo. **I valori da confermare devono essere controllati da un ortodontista.**
+**Parametri** (vista avanzata): quali **Denti** si muovono (incisivi e canini, fino ai premolari, oppure tutti) e gruppi richiudibili per **Linea d'arcata e tolleranze**, **Denti fermi e linea mediana**, **Spazio** (ordine, espansione, avanzamento, retrazione, chiudere gli spazi), **IPR** e **Movimenti verticali**. Dopo aver cambiato i parametri, esegui di nuovo il passo. **I valori da confermare vanno verificati da un ortodontista.**
 
 **Correzioni a mano:** **Sposta un dente** (le componenti cliniche mesiale/distale, vestibolare/linguale, estrusione/intrusione, torque, inclinazione e rotazione, con passi − e +; blocca il dente; valori esatti), **Linea d'arcata** (trascina gli 11 punti della curva e **Applica la linea**, che può ricalcolare la posizione finale su di essa) e **Torna alla posizione iniziale**.
 
@@ -267,7 +267,7 @@ Il livello **Posizione finale** della vista 3D mostra i denti nella loro posizio
 
 **Esegui** suddivide il movimento in stadi: un allineatore per stadio, con un calendario. Il risultato mostra il numero di allineatori, i giorni (per esempio da una data di inizio, portati 22 ore al giorno), lo schema usato e le collisioni rimaste.
 
-**Parametri** (vista avanzata): **Parodonto** (sano, stadio I, II, III), **Schema** (automatico, simultaneo, sequenziale, strutturato), il calendario (**Cambio dell'allineatore**: intervallo fisso o adattivo 7/14 giorni, **Giorni per allineatore** da 5 a 21, **Inizio del trattamento**) e il gruppo **Movimento massimo per allineatore**.
+**Parametri** (vista avanzata): **Parodonto** (sano, stadio I, II, III), **Schema** (automatico, simultaneo, sequenziale, strutturato), il calendario (**Cambio allineatore**: intervallo fisso o adattivo 7/14 giorni, **Giorni per allineatore** da 5 a 21, **Inizio trattamento**) e il gruppo **Movimento massimo per allineatore**.
 
 **Correzioni a mano:** **Rallenta un dente** (seleziona il dente nella vista, scegli una velocità tra 0,2 e 1, **Rallenta il dente**; gli allineatori dell'arcata vengono ricalcolati nello stesso passo annullabile).
 
@@ -279,7 +279,7 @@ La **linea del tempo** in basso nella vista 3D è un normale cursore sugli stadi
 
 **Esegui** crea un record per ogni classificazione che il programma propone in base alle evidenze: difficoltà del caso, schema degli allineatori, se il caso è trattabile solo con allineatori, rischio di movimento e attacco per ogni dente, misure della corona e tipo di dente. Il clinico li conferma o li cambia prima della produzione.
 
-Filtra l'elenco (**Tutti**, **Da rivedere**, **Con una nota**, **Dente selezionato**). Per ogni voce puoi **Confermare** la proposta, scegliere un altro valore tra le sue opzioni, oppure **Tornare alla proposta**. Il gruppo **Tutti insieme** ha **Conferma quelli senza nota**: le voci che portano una nota da verificare non vengono mai confermate in blocco. Gli attacchi e lo schema degli allineatori in vigore alimentano il calendario, l'esportazione e la relazione.
+Filtra l'elenco (**Tutti**, **Da rivedere**, **Con avviso**, **Dente selezionato**). Per ogni voce puoi usare **Conferma** per accettare la proposta, scegliere un altro valore tra le sue opzioni, oppure **Torna alla proposta**. Il gruppo **Tutte insieme** ha **Conferma quelle senza avvisi**: le voci che portano un avviso da verificare non vengono mai confermate in blocco. Gli attacchi e lo schema degli allineatori in vigore alimentano il calendario, l'esportazione e la relazione.
 
 ### 5.11 Esporta per la stampa (gruppo Produzione)
 
@@ -287,7 +287,7 @@ Questa funzione non è uno dei nove passi. Il suo ispettore chiede prima dove fi
 
 - **Fin dove arriva l'allineatore:** per ogni arcata e lato, l'ultimo dente coperto dall'allineatore. I denti dietro non sono coperti e non si muovono. Se manca un dente e il guscio dietro lo spazio sarebbe debole, l'ispettore consiglia un'altra fine.
 - **Qualità dei file di stampa:** **Bozza** (dettaglio 0,25 mm), **Leggera** (0,15 mm), **Standard** (0,1 mm, file di produzione, il valore predefinito), **Alta** (0,08 mm).
-- Gruppi avanzati: **Bordo dell'allineatore** (equatore, dritto, a festoni, liscio; altezza e prolungamento del bordo; direzione di inserzione), **Guscio** (spessore, gioco interno), **Testo di identificazione** (arcata, numero e data incisi all'interno), **Morso con gli allineatori indossati**, rampe e qualità.
+- Gruppi avanzati: **Bordo dell'allineatore** (equatore, dritto, a festoni, liscio; altezza e prolungamento del bordo; direzione di inserzione), **Guscio** (spessore, gioco interno), **Scritta di riconoscimento** (arcata, numero e data incisi all'interno), **Morso con gli allineatori indossati**, rampe e qualità.
 
 **Esporta** apre una finestra di cartella e lavora in secondo piano (può richiedere molto tempo; fermalo con la croce nella barra di stato). I file vengono costruiti in una cartella nascosta e spostati a posto quando sono tutti pronti; l'elenco dei file viene per ultimo, quindi un'esportazione interrotta non lascia cartelle scritte a metà. Scrive i gusci degli allineatori e i modelli (STL), il calendario, un **controllo di stampa** per ogni file (superficie chiusa, un solo pezzo, nessuna autointersezione, nessun foro attraverso la parete, volume positivo, entra nel piatto) e una relazione. I file stanno nelle cartelle `modelli_termoformatura` e `stampa_resina`, insieme a `print_check.json`, `stages.csv`, `visits.ics`, `report.html` e `manifest.json`. Un guscio che non supera il controllo di stampa ferma l'esportazione di tutti gli allineatori con un messaggio: non stampare un file così.
 
@@ -305,7 +305,7 @@ Stampa porta gli allineatori esportati alla **Elegoo Saturn 4 Ultra 16K**: orien
 
 #### 5.12.1 Prima di cominciare
 
-1. Crea gli allineatori (passo 8) ed esegui **Esporta per la stampa**. La finestra di stampa legge i gusci esportati; senza esportazione dice **Non ancora esportato: esegui prima "Esporta per la stampa".**
+1. Crea gli allineatori (passo 8) ed esegui **Esporta per la stampa**. Il progetto ricorda la cartella di quell'esportazione: la finestra di stampa legge i gusci degli allineatori dalla sua cartella `stampa_resina`. Senza esportazione dice **Non ancora esportato: esegui prima "Esporta per la stampa".**
 2. Prepara la stampante con i parametri macchina DENTAL 45 (sezione 5.12.2).
 3. Tieni a portata di mano le impostazioni del produttore della resina per la Saturn 4 Ultra 16K (sezione 5.12.3).
 4. Procurati una chiavetta USB **FAT32** (funziona meglio da 16 GB o meno; la stampante legge nomi di file ASCII).
@@ -355,36 +355,38 @@ Copiali dalla scheda del produttore per questa stampante, mai da un'altra resina
 3. Controlla **Stampante** (il profilo, e che i file arrivano alla stampante su una chiavetta USB, quindi non serve la rete) e **Resina** (il riepilogo dei tuoi valori, oppure **Inserisci i valori della resina**).
 4. Scegli **Prepara la stampa**. La finestra legge gli allineatori, li orienta, aggiunge i supporti e li dispone sul piatto, poi prepara gli strati di ogni piatto.
 
-**I supporti non stanno mai sul lato di calzata.** Ogni guscio viene orientato con il lato di calzata (la superficie interna che tocca i denti) rivolto lontano dal piatto, così la resina scola e non si forma un bicchiere. I supporti toccano solo il lato esterno: sono piccole punte coniche su un fusto sottile sopra una base. Prima che venga scritto un file girano due controlli, e un fallimento ferma la preparazione con un messaggio che indica la causa:
+**I supporti non stanno mai sul lato di calzata.** Ogni guscio viene orientato con il lato di calzata (la superficie interna che tocca i denti) rivolto lontano dal piatto: l'apertura dell'allineatore guarda in alto, così la resina scola e non si forma un bicchiere. L'orientamento prova anche inclinazioni fino a 45° a passi di 15°, che tagliano la parete sottile in obliquo e riducono la forza che stacca ogni strato dalla vasca, e ruota l'allineatore in modo che il suo lato lungo corra lungo il lato lungo del piatto. I supporti toccano solo il lato esterno: piccole punte coniche (0,35 mm) su un fusto sottile (1,0 mm). I fusti poggiano su una **zattera** (in inglese *raft*), una base di 1,0 mm stampata sul piatto. La zattera non riempie tutta l'area sotto l'allineatore: segue i piedi dei supporti, un cuscinetto smussato attorno a ciascun piede unito ai vicini da fasce di 4 mm, così sotto un'arcata dentale ha la **forma di una U**. Risparmia resina e si stacca insieme ai supporti. Prima che venga scritto un file girano due controlli, e un fallimento ferma la preparazione con un messaggio che indica la causa:
 
 - nessun supporto può toccare il lato di calzata né il suo bordo (**Un supporto toccherebbe l'interno di un allineatore**);
 - nessuna regione di alcuno strato può iniziare nel vuoto senza un supporto (**Una parte di un allineatore verrebbe stampata nel vuoto senza supporto**).
 
-Nella vista avanzata **Impostazioni di stampa** mostra la **Punta dove il supporto tocca** (predefinita 0,35 mm), lo **Spessore dei supporti** (1,0 mm), la **Base sotto i supporti** (1,0 mm) e gli spazi sul piatto (**Spazio tra gli allineatori** 3 mm, **Spazio dal bordo del piatto** 4 mm). Se un allineatore non entra, riduci lo spazio dal bordo del piatto.
+**Come si conosce il lato di calzata.** La preparazione deve sapere quale superficie di un guscio è il lato di calzata. Il comando `print.prepare` lo ricava dal **modello dello stadio**, il modello dell'arcata in quello stadio che **Esporta per la stampa** scrive nella cartella `modelli_termoformatura`, accanto a `stampa_resina`: la parte del guscio che poggia sul suo modello (compresi il gioco e il testo inciso) è il lato di calzata, e un allineatore passivo usa il modello dell'ultimo stadio. Se meno del 30 % del guscio poggia sul suo modello (un altro stadio, o un altro sistema di riferimento), la preparazione si ferma con il codice `print-model-mismatch` e non scrive nulla. Un pezzo che non viene da un'esportazione ricava il lato di calzata dalla propria forma. La finestra di stampa di questa versione lo ricava sempre dalla forma di ogni guscio.
+
+Nella vista avanzata **Impostazioni di stampa** mostra la **Punta dove il supporto tocca** (predefinita 0,35 mm), lo **Spessore dei supporti** (1,0 mm), la **Base sotto i supporti** (1,0 mm, lo spessore della zattera) e gli spazi sul piatto (**Spazio tra gli allineatori** 3 mm, **Spazio dal bordo del piatto** 4 mm). Se un allineatore non entra, riduci lo spazio dal bordo del piatto.
 
 L'anteprima del piatto mostra ogni piatto visto dall'alto (**Piatto n di N**, **Piatto precedente**, **Piatto successivo**) con le stime: gli allineatori sul piatto, gli strati, il tempo di stampa (circa; comprende l'attesa del riscaldamento) e la resina. **Resina da versare nella vasca (almeno)** tiene conto anche del livello minimo della vasca.
 
 #### 5.12.5 Salvare su una chiavetta USB
 
-1. Scegli **Salva i file di stampa…** e seleziona la chiavetta USB (FAT32). Ogni piatto diventa un file, `plate_01.goo`, `plate_02.goo` e così via, nel formato GOO delle stampanti Elegoo.
+1. Scegli **Salva i file di stampa…** e seleziona la chiavetta USB (FAT32). Ogni piatto diventa un file, `plate_01.goo`, `plate_02.goo` e così via, nel formato GOO delle stampanti Elegoo. Gli allineatori dei piatti salvati vengono registrati come **Inviato alla stampante** (sezione 5.12.6).
 2. **Salva il piatto con i supporti come STL…** scrive gli stessi piatti come file STL, per ispezione.
 3. Quando i file sono salvati la finestra dice **Inserisci la chiavetta USB nella stampante, scegli il file sul suo schermo e avvia la stampa.** Fallo sulla stampante.
 4. Dopo la stampa: togli i supporti dal lato esterno, lava e polimerizza come indica il produttore della resina, poi controlla lo spessore delle pareti e l'adattamento prima dell'uso. Lavaggio e polimerizzazione sono passi manuali di laboratorio fuori da DentalCraft.
 
 #### 5.12.6 Il tracciamento di stampati e mancanti
 
-DentalCraft conserva nel progetto lo stato di stampa di ogni allineatore (arcata, numero, passivo o attivo), così vedi sempre quali sono stampati e quali restano.
+DentalCraft conserva nel progetto lo stato di stampa di ogni allineatore della serie (arcata, numero, passivo o attivo, scritto come il suo id: `SUP-03` è l'allineatore superiore 3, `INF-12-P` il passivo inferiore 12), così vedi sempre quali sono stampati e quali restano. Lo mostra la voce **Stampa** del gruppo **Produzione**: **Stampati x di y**, **Da stampare: n** e una riga per ogni allineatore. Selezionarla mostra soltanto questo; il suo pulsante **Prepara la stampa…** apre la finestra di stampa.
 
-| Stato | Significato |
+| Stato (ispettore / finestra di stampa) | Significato |
 |---|---|
 | **Da stampare** | Mai segnato. |
-| **In preparazione** (in coda) | Su un piatto preparato, non ancora salvato. |
-| **Inviato alla stampante** (inviato) | Il file del piatto è stato salvato per la stampante. |
+| **In coda** / **In preparazione** | Messo in coda per un piatto. La finestra di stampa non lo imposta da sola: passa direttamente a **Inviato** quando salvi i file; un agente può impostarlo con `aligners.print.mark`. |
+| **Inviato** / **Inviato alla stampante** | Il file del piatto è stato salvato per la stampante. |
 | **Stampato** | Lo hai confermato tu. DentalCraft non segna mai da solo un allineatore come stampato; lo fanno solo la tua conferma, o il rapporto di una stampante che il lavoro è finito. |
 | **Non riuscito** | La stampa è fallita. |
 | **Da ristampare** | Stampato, ma rotto o perso: torna nell'elenco. |
 
-Nell'ispettore di **Stampa**, **Segna…** dà **Stampato**, **Non riuscito** o **Da ristampare** a un allineatore; ogni segno è una modifica annullabile salvata con il progetto. La finestra di stampa preseleziona ciò che manca la volta successiva.
+Nell'ispettore di **Stampa**, **Segna…** dà **Stampato**, **Non riuscito** o **Da ristampare** a un allineatore; ogni segno è una modifica annullabile salvata con il progetto. I segni sono fatti sugli allineatori che hai prodotto: restano quando una scansione viene sostituita o la serie viene ricalcolata. Un segno che non ha senso viene rifiutato e non cambia nulla (per esempio **Stampato** su un allineatore già stampato; un allineatore esce da **Stampato** solo quando chiedi di ristamparlo). La finestra di stampa preseleziona ciò che manca la volta successiva.
 
 #### 5.12.7 Se la preparazione fallisce
 
@@ -446,7 +448,7 @@ Un progetto è un unico file `.dcprj` (un contenitore ZIP: il caso, le scansioni
 | Un passo non fa nulla quando faccio clic sulla sua voce di menu | È voluto: il clic seleziona soltanto. Usa **Esegui** nell'ispettore. |
 | **Esegui** è disattivato | Un altro comando è in corso (vedi la barra di stato); aspetta o fermalo con la croce. |
 | **Prima il morso** | Con entrambe le arcate, esegui **Morso** prima di **Posizione finale**. |
-| Un passo ha perso la spunta o mostra **Risultati non aggiornati** | Una modifica a monte (punti dente, colori, denti) l'ha reso obsoleto. Eseguilo di nuovo, poi i passi successivi. `Ctrl+Z` annulla la modifica. |
+| Un passo ha perso la spunta o mostra **Risultati da rifare** | Una modifica a monte (punti dente, colori, denti) l'ha reso obsoleto. Eseguilo di nuovo, poi i passi successivi. `Ctrl+Z` annulla la modifica. |
 | **Non è un numero di dente** | Usa numeri FDI: da 11 a 18, da 21 a 28, da 31 a 38, da 41 a 48. |
 | Un'arcata non è stata numerata | Il messaggio indica la scansione da controllare; quell'arcata conserva i punti che aveva. Segna i denti a mano o correggi la scansione, poi esegui di nuovo. |
 | **Salvataggio non riuscito** | Controlla che la cartella sia scrivibile e che il disco abbia spazio, poi **Salva** di nuovo. Il file precedente è conservato come `.bak`. |
@@ -488,4 +490,6 @@ La schermata **Assistenza** (dalla Home) ha il manuale, un modulo per i ticket, 
 | Indice di Little | Una misura dell'irregolarità dei denti anteriori. |
 | Allineatore passivo | Un allineatore che non muove più i denti: li tiene fermi mentre l'altra arcata finisce una serie più lunga. |
 | Stadio | Un passo del movimento; un allineatore per stadio. |
+| Modello dello stadio | Il modello di un'arcata in uno stadio del movimento, su cui è costruito l'allineatore di quello stadio. **Esporta per la stampa** lo scrive accanto ai gusci degli allineatori. |
 | Punto dente | Il punto che DentalCraft mette su ogni dente quando trova i denti. |
+| Zattera (raft) | La base sottile stampata sul piatto sotto i supporti. Segue i piedi dei supporti, quindi sotto un'arcata ha la forma di una U. |

@@ -1,0 +1,10 @@
+# GitHub Pages, served from the root of the main branch. No GitHub Actions: Pages builds this itself.
+title: DentalCraft documentation
+description: User manual, developer guide, architecture and sources of DentalCraft, in English and Italian.
+theme: jekyll-theme-minimal
+lang: en
+show_downloads: false
+exclude:
+  - .build
+  - tools
+  - README.md

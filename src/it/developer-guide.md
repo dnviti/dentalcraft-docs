@@ -1,6 +1,6 @@
 # DentalCraft: Guida per sviluppatori
 
-*Come si combinano i repository, come si compilano, si provano e si rilasciano, come un agente pilota l'applicazione e come contribuire. Edizione del 21 novembre 2026, per DentalCraft 0.2.0-alpha.14 (modulo Allineatori 0.2.0-alpha.12, motore 0.3.0-alpha.8).*
+*Come si combinano i repository, come si compilano, si provano e si rilasciano, come un agente pilota l'applicazione e come contribuire. Edizione del 22 novembre 2026, per DentalCraft 0.2.0-alpha.15 (modulo Allineatori 0.2.0-alpha.13, motore 0.3.0-alpha.9).*
 
 > **Non è un dispositivo medico.** DentalCraft è software per la ricerca e la progettazione. Non è certificato per l'uso clinico, e nulla in questa guida lo cambia.
 
@@ -150,7 +150,7 @@ Il `.cargo/config.toml` del superprogetto abilita `sccache` e il linker `mold` p
 `dentalcraft-aligners` e `dentalcraft-app` dipendono dagli altri repository come dipendenze git, fissate per tag:
 
 ```toml
-dc-case = { git = "https://github.com/dnviti/dentalcraft-core.git", tag = "v0.3.0-alpha.8" }
+dc-case = { git = "https://github.com/dnviti/dentalcraft-core.git", tag = "v0.3.0-alpha.9" }
 ```
 
 Per lavorare insieme su core e un consumatore senza pubblicare nulla, il `.cargo/config.toml` del superprogetto reindirizza quelle sorgenti git verso gli alberi di lavoro:
@@ -402,6 +402,7 @@ In questa edizione ci sono 38 armature (core 19, aligners 15, app 4): regole del
 - **Test con oracolo di riferimento:** gli algoritmi Rust vengono confrontati con il componente aggiuntivo Blender originale su fixture e su scansioni reali, con tolleranze (Hausdorff dei vertici sotto 0,01 mm, etichette almeno al 99 %, pose entro 0,01 mm e 0,05°, errore relativo della diagnosi sotto 1e-3). Dove il codice Rust si discosta di proposito (per esempio il controllo dei capi dell'arcata di *Trova i denti*), lo scostamento è registrato e provato.
 - **Logica dell'interfaccia senza finestra** con `egui_kittest`: ogni schermata in entrambe le lingue, parità delle chiavi, le impostazioni, il test di salvataggio dell'area di lavoro. I test di istantanee wgpu richiedono una GPU e girano solo in locale.
 - **Un comportamento che si è già rotto una volta ha un test:** denti adiacenti restano separati, il riconoscimento si ferma agli ultimi molari, i denti non fanno mai giri di 360°, un morso non si compenetra mai in modo visibile, la sessione sopravvive a un riavvio.
+- **I test troppo lenti senza ottimizzazioni** sono ignorati in una build di debug e girano con `cargo test --release`, come fa la CI: `dca-algo` ha un `build.rs` che imposta `cfg(optimized)` quando l'opt-level è maggiore di 0, e i test di `tests/bite_robustness.rs` (scansioni del morso parziali, di bassa qualità, a due prese e speculari) sono marcati `#[ignore]` se non è impostato.
 
 ## 11. Aggiungere una funzione
 
@@ -460,6 +461,7 @@ I comandi registrati in questa edizione, come li stampa `dentalcraft-cli command
 | `project.open` | Open project |
 | `project.save` | Save project |
 | `case.import` | Import scan |
+| `case.remove-scan` | Remove scan |
 | `case.set-role` | Set scan role |
 | `edit.undo` | Undo |
 | `edit.redo` | Redo |

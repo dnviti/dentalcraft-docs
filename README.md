@@ -19,7 +19,7 @@ The pages are also published at <https://dnviti.github.io/dentalcraft-docs/> (Gi
 
 ## Which version they describe
 
-Each document carries its edition date and the versions it describes on its first page. The current edition (21 November 2026) describes DentalCraft **0.2.0-alpha.14** (application), with the Aligners module **0.2.0-alpha.12** and the engine (core) **0.3.0-alpha.8**. It includes the **Settings** (with the "Advanced options and parameters" switch, off by default) and the direct **printing** of aligners on the Elegoo Saturn 4 Ultra 16K (U-shaped raft, fitting side from the stage model, print tracking per aligner). Where something is not finished, the text says so.
+Each document carries its edition date and the versions it describes on its first page. The current edition (22 November 2026) describes DentalCraft **0.2.0-alpha.15** (application), with the Aligners module **0.2.0-alpha.13** and the engine (core) **0.3.0-alpha.9**. It adds **removing scans** from the case, a **bite registration** that accepts partial and low-quality scans (with the reasons to check listed), the bite scan no longer drawn in the 3D view, the **gingiva closed** with a flat base, and a more reliable **tooth numbering**. It keeps the **Settings** (with the "Advanced options and parameters" switch, off by default) and the direct **printing** of aligners on the Elegoo Saturn 4 Ultra 16K. Where something is not finished, the text says so.
 
 ## How this repository is updated
 

@@ -1,6 +1,6 @@
 # DentalCraft User Manual
 
-*Planning clear-aligner treatments with the Aligners module: from scan to printed aligner. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.14 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8), which adds Settings with the "Advanced options and parameters" switch and direct printing on the Elegoo Saturn 4 Ultra 16K.*
+*Planning clear-aligner treatments with the Aligners module: from scan to printed aligner. Edition of 22 November 2026, for DentalCraft 0.2.0-alpha.15 (Aligners module 0.2.0-alpha.13, engine 0.3.0-alpha.9), which adds removing scans, a bite registration that accepts partial scans, a closed gingiva base and more reliable tooth numbering, on top of Settings with the "Advanced options and parameters" switch and direct printing on the Elegoo Saturn 4 Ultra 16K.*
 
 > **Important: not a medical device.** DentalCraft is not a certified medical device. It has no CE marking, no FDA clearance and no clinical validation. Do not use it on patients or for clinical decisions. Every plan it produces must be checked by a qualified clinician, and every printed aligner by a qualified person, before any use. Use it for evaluation, training, research and design tests only; the licence allows noncommercial use only.
 
@@ -191,7 +191,7 @@ In the inspector, under **Manual corrections** and **Scans in the case**:
 - **Role** of each scan. Moving a scan to the other arch renumbers its tooth marks (13 becomes 43) and rebuilds what depended on it.
 - **Flip the occlusal side**, if the side of the teeth was recognised the wrong way round. Pressed again it flips it back.
 - **Close with a base** (and **Run again**) for each arch scan; the slider **Base height** sets the base from 0.5 to 20 mm.
-- **Remove the scan** (the bin button, or Delete). A dialog asks first; everything computed from the scan goes, and `Ctrl+Z` brings it back.
+- **Remove the scan** (the bin button on the row, or the Delete key): see section 5.2.5. A dialog asks first; everything computed from the scan goes, and `Ctrl+Z` brings it back.
 
 #### 5.2.4 Scanning with a 3D scanner (alpha)
 
@@ -205,6 +205,28 @@ In the simple view the popup has three steps: **1 Acquisition**, **2 Surface**, 
 
 Steady, diffuse lighting gives the cleanest scans: the repository includes a design for a scanner enclosure with controlled LED lighting. The scanner's own fill light is turned on while streaming and off afterwards.
 
+#### 5.2.5 Removing a scan or an imported model
+
+Any scan in the case, whatever its role (**Upper**, **Lower** or **Bite**), can be removed: a file imported by mistake, a model of another patient, a bad take of a bite.
+
+**Four ways to start the removal** (all four do the same):
+
+- The **bin button** on the scan's row in **Scans in the case** (inspector of **Import scans**).
+- The **bin button** on each bite scan's row in the inspector of **Bite**.
+- The **Remove the scan** button in **Selected component**, the first block of the right panel, when the scan is the selected component.
+- The `Delete` or `Backspace` key with the scan selected. The key does nothing while a tool is open or while you type in a text field, so Backspace in a field never removes a scan.
+
+**Confirm.** A dialog **Remove the scan?** names the scan and says that it leaves the case together with everything computed from it, and that `Ctrl+Z` brings it back. **Remove** confirms; anything else cancels, and nothing has changed until you confirm.
+
+**Result.** The removal is one undo step. A notice says **Scan removed**; when results were cleared, a second notice, **Results cleared**, lists them. `Ctrl+Z` brings back the scan and everything it cleared together; `Ctrl+Shift+Z` removes it again.
+
+**What is cleared:**
+
+- **An arch scan (upper or lower)** takes with it everything derived from that arch: its tooth marks and teeth marked missing, the tooth colours (teeth and gum), tooth axes and measures, the 3D teeth, the gingiva, the case analysis (including the Bolton ratios and the complexity score, which need both arches), the final position, the aligners, the clinical review, the bite ramps, the control visits and the study model of that arch. The bite registration is cleared too, to be redone. Your settings are kept. The other arch is not touched: it stays where the bite registration moved it, so run **Bite** again. The case's reference frame is reset, as when a scan is replaced.
+- **A bite scan** clears only the bite registration, and only when that scan took part in it. A virtual bite, and a registration made on the other bite scan, stay. The arches stay where the registration moved them: run **Bite** again.
+
+**When it is refused.** An arch scan cannot be removed while the case holds data of a module that this version cannot read (a file written by a newer version): the notice says why. A bite scan can still be removed.
+
 ### 5.3 Step 2: Find the teeth (group Teeth)
 
 **Run** numbers the teeth of each arch automatically (FDI numbers) and then orients the arch; the result is one **tooth mark** per tooth, one undo step.
@@ -215,7 +237,7 @@ Steady, diffuse lighting gives the cleanest scans: the repository includes a des
 - **Missing teeth**: FDI numbers separated by commas (for example `35, 45`). A wrong number shows a red message; the list is saved when you leave the field.
 - **Teeth found**: a grid per arch, right side of the patient first. A filled box means the tooth has a mark, a crossed box that it is missing, an empty box that it has no mark.
 
-DentalCraft checks its own proposal: if the numbering would give a third molar where the scan has only gum behind the last molars, or would merge a crowded tooth with its neighbour, the proposal is corrected rather than shifting every number after it. Detection stops at the last molars; it never invents teeth beyond them.
+DentalCraft checks its own proposal. If the numbering would give a third molar where the scan has only gum behind the last molars, would stretch a tooth over the gum at the end of the arch, or would merge two crowded teeth into one, the teeth are found again with the arch free to end at the last crown, instead of shifting every number after the error. A phantom tooth behind the last molar is therefore not numbered, and neighbouring teeth stay separate teeth. An erupted third molar keeps its number. Detection stops at the last molars; it never invents teeth beyond them. As always, check the numbers before moving on.
 
 **Manual corrections:** **Mark a tooth** (click to place or move, Shift+click to delete the nearest mark), **Delete a tooth**, **Change a tooth number**, **Missing tooth**, **Number the teeth in order** (click each tooth in turn: `S` skips, Backspace goes back, Enter or Esc finishes) and **Clear all the tooth marks**.
 
@@ -231,7 +253,7 @@ Neighbouring teeth stay separate teeth: they are never merged into one. Running 
 
 ### 5.5 Step 4: 3D teeth (group Teeth)
 
-**Run** gives each tooth as a **closed 3D solid** with its axis and builds a gum that follows the teeth. Every tooth is closed and squared off, so no mesh is left open. It needs the teeth to be separated. The final position and the aligners of the arch, if any, are cleared because they were planned on the old teeth.
+**Run** gives each tooth as a **closed 3D solid** with its axis and builds a gum that follows the teeth. Every tooth is closed and squared off, so no mesh is left open, and the gum is closed too: a flat base, 3 mm under its lowest point along the occlusal axis, makes it a closed solid like the base of an imported arch scan. The base stays still while the teeth move; the aligners and the export are built without it. It needs the teeth to be separated. The final position and the aligners of the arch, if any, are cleared because they were planned on the old teeth.
 
 After brush corrections, **Run again** rebuilds only the arch's teeth that changed; the others keep their solids. **Rebuild a tooth** rebuilds a single tooth, and **Show the region** highlights the region a tooth was built from.
 
@@ -243,15 +265,26 @@ After brush corrections, **Run again** rebuilds only the arch's teeth that chang
 
 ### 5.7 Step 6: Bite (group Plan)
 
-The bite sets how the upper arch faces the lower one. It is functional only: it sets the occlusion, and the **bite scan is never shown as a 3D object** in the view (except while you pick its three points).
+The bite sets how the upper arch faces the lower one. It is functional only: it sets the occlusion, and the **bite scan is never shown as a 3D object** in the view (it appears only while you pick its three points, and it cannot be picked by clicking in the view).
 
-- With **bite scans** in the case (one per side for an intraoral scanner, or one scan round the arch for models in occlusion), **Run** registers the arches on them. A bite is accepted when the front part is captured correctly: the back of the mouth need not be complete.
+- With **bite scans** in the case (one per side for an intraoral scanner, or one scan round the arch for models in occlusion), **Run** registers the arches on them. A partial or low-quality bite scan is used too, as long as its teeth fit the arches: a scan of the front teeth only, of one side, or with holes, noise or soft tissue. It is not refused for being incomplete: it registers, and the report tells you what to check (**to check**, below). A bite is accepted when the front part is captured correctly: the back of the mouth need not be complete.
 - With no bite scan, **Run** uses a **virtual bite**, and says so in a warning: for the clinical relation, register the buccal bite.
 - **Import the bite scans…** imports the files with the role bite.
 - **Three points** (manual): pick three points far apart on the lower arch, then the same three, in the same order, on the bite scan, and optionally the same for the upper arch.
 - **Correct the interpenetration** moves the upper arch along the occlusal axis to the first contact. The report shows the interpenetration found, the one left and the opening.
 
-The registration report shows **Bite registered** or **Bite registered, to check**, with one line per reason to check (for example a residual above 0.10 mm, fewer than four teeth in contact, front teeth only). The two arches never visibly interpenetrate in the 3D view after this step.
+The registration report shows **Bite registered** when there is nothing to check, or **Bite registered, to check** with one line per reason. The reasons come from how good the scan is and how much of the mouth it covers, never from a refusal:
+
+- **RMS above good:** the scan deviates more than 0.10 mm from an arch (RMS deviation on the lower or the upper arch).
+- **Few teeth:** fewer than four teeth of an arch are in the bite scan.
+- **Low coherence:** less than 70 % of the scan's surface facing an arch lies within 0.10 mm of it (a noisy or distorted scan).
+- **Front teeth only** or **one side only:** the scan does not reach the back teeth, or the other side; the relation there is extrapolated. Add the scan of the other side, or check the contacts on the patient.
+- **The two bite scans disagree:** with two scans, the upper teeth are more than 0.10 mm apart (did the patient close differently?).
+- **Interpenetration:** the arches go into each other by more than 0.10 mm; **Correct the interpenetration** removes it.
+- **The arches do not touch:** the closest points are more than 0.10 mm apart (was the patient in maximum intercuspation?).
+- **Scan ignored:** with two bite scans (two sides, or two takes of the same teeth), one that does not fit the arches while the other does is left out and named in the report. The registration rests on the other scan, and the ignored one stays where it was. Two takes saved under the same file name are told apart by a number, for example `(2)`.
+
+A "to check" bite is registered and used: the line tells you what to verify. A bite is **refused**, and nothing moves, only when the fit cannot be trusted at all: no bite scan fits the arches (another patient, a mirrored scan, or a scan without the teeth of both arches; with two scans the message gives the reason of the one that came closest), the registered arches do not face each other, or they interpenetrate by more than 1.0 mm after the fit. The same message also appears when there are more than two bite scans, when an arch has no separated teeth, or when a scan is too small. After a refusal, try another take or **Three points**, or remove the wrong scan (section 5.2.5). The estimate of a virtual bite never takes over silently after a refusal. The two arches never visibly interpenetrate in the 3D view after this step.
 
 ### 5.8 Step 7: Final position (group Plan)
 
@@ -413,6 +446,7 @@ The toolbar over the view has: the standard views (**Occlusal**, **Front**, **Le
 - **Selecting:** with no tool open, click a component (a 3D tooth, a gingiva, a scan, a tooth number). The selection gets a bold outline around the object, and the inspector starts with **Selected component**.
 - **Gizmo:** the selected component carries a transform gizmo: `W` move, `E` rotate, `R` scale (teeth only; Ctrl snaps to 0.5 mm, 5°, ×0.05). A drag is previewed and applied as one undoable step; Esc cancels it. A tooth moves in the plan at the stage shown, never at stage 0.
 - **Tooth numbers** appear as chips over the teeth; `Alt`+click on a number, a mark or the scan chooses that tooth for the brush.
+- **Bite scan:** the bite scan is not drawn in the view (only while the **Three points** tool is open) and cannot be picked by clicking: it is a functional scan, not a model. Remove it from its row in the lists (section 5.2.5).
 
 | Key | Action |
 |---|---|
@@ -449,9 +483,12 @@ A project is one `.dcprj` file (a ZIP container: the case, the scans as mesh blo
 | A step does nothing when I click its menu entry | By design: the click only selects. Use **Run** in the inspector. |
 | **Run** is disabled | Another command is running (see the status bar); wait or stop it with the cross. |
 | **Bite first** | With both arches, run **Bite** before **Final position**. |
+| **Bite registered, to check** | The registration is used but one or more lines say what to verify (section 5.7). Check the contacts with the contact map and on the patient, or add a better bite scan. |
+| The bite is refused | No bite scan fitted the arches, the arches do not face each other, or they interpenetrate by more than 1.0 mm. Read the message, try another take or **Three points**, or remove the wrong scan (section 5.2.5). |
 | A step lost its tick or shows **Results out of date** | A change upstream (tooth marks, colours, teeth) made it stale. Run it, then the steps after it, again. `Ctrl+Z` undoes the change. |
 | **Not a tooth number** | Use FDI numbers: 11 to 18, 21 to 28, 31 to 38, 41 to 48. |
 | An arch was not numbered | The message names the scan to check; that arch keeps the marks it had. Mark the teeth by hand or fix the scan, then run again. |
+| I imported the wrong scan | Use the bin button on its row (or select it and press Delete). Confirm; `Ctrl+Z` brings it back with what it cleared. See section 5.2.5. |
 | **Save failed** | Check the folder is writable and the disk has room, then **Save** again. The previous file is kept as `.bak`. |
 | Scanner is not found or the stream stops | Reconnect the scanner. Linux: your user must be allowed to use the camera device. Windows: allow camera access for desktop apps. The app says if the device was lost. |
 | The turntable does not connect | Switch it off and on, bring it close and connect again. It should connect at the first attempt; you never need to forget or re-pair it to switch devices. If it does not, send the diagnostics (chapter 9) with your report. |

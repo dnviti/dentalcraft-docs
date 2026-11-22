@@ -1,6 +1,6 @@
 # DentalCraft Sources
 
-*Bibliography of the papers, standards, manuals and specifications behind DentalCraft. Edition of 21 November 2026. The living list is `SOURCES.md` in the `dentalcraft` repository; this document is regenerated from it at every release.*
+*Bibliography of the papers, standards, manuals and specifications behind DentalCraft. Edition of 22 November 2026. The living list is `SOURCES.md` in the `dentalcraft` repository; this document is regenerated from it at every release.*
 
 Every paper, book, manual, dataset, standard, RFC and specification that DentalCraft relies on, grouped by area. For each one: authors, year, title, venue, DOI or URL, and where it is used.
 

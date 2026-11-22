@@ -1,6 +1,6 @@
 # DentalCraft: Manuale utente
 
-*Pianificare trattamenti con allineatori trasparenti con il modulo Allineatori: dalla scansione all'allineatore stampato. Edizione del 21 novembre 2026, per DentalCraft 0.2.0-alpha.14 (modulo Allineatori 0.2.0-alpha.12, motore 0.3.0-alpha.8), che aggiunge le Impostazioni con l'interruttore «Opzioni e parametri avanzati» e la stampa diretta sulla Elegoo Saturn 4 Ultra 16K.*
+*Pianificare trattamenti con allineatori trasparenti con il modulo Allineatori: dalla scansione all'allineatore stampato. Edizione del 22 novembre 2026, per DentalCraft 0.2.0-alpha.15 (modulo Allineatori 0.2.0-alpha.13, motore 0.3.0-alpha.9), che aggiunge la rimozione delle scansioni, una registrazione del morso che accetta scansioni parziali, la base chiusa della gengiva e una numerazione dei denti più affidabile, oltre alle Impostazioni con l'interruttore «Opzioni e parametri avanzati» e alla stampa diretta sulla Elegoo Saturn 4 Ultra 16K.*
 
 > **Importante: non è un dispositivo medico.** DentalCraft non è un dispositivo medico certificato. Non ha marcatura CE, autorizzazione FDA né validazione clinica. Non usarlo sui pazienti né per decisioni cliniche. Ogni piano che produce deve essere controllato da un clinico qualificato, e ogni allineatore stampato da una persona qualificata, prima di qualsiasi uso. Usalo solo per valutazione, formazione, ricerca e prove di progettazione; la licenza consente solo l'uso non commerciale.
 
@@ -191,7 +191,7 @@ Nell'ispettore, sotto **Correzioni a mano** e **Scansioni nel caso**:
 - **Ruolo** di ogni scansione. Spostare una scansione sull'altra arcata rinumera i suoi punti dente (13 diventa 43) e ricostruisce ciò che ne dipendeva.
 - **Capovolgi il lato occlusale**, se il lato dei denti è stato riconosciuto al contrario. Premuto di nuovo lo ricapovolge.
 - **Chiudi con una base** (e **Esegui di nuovo**) per ogni scansione d'arcata; il cursore **Altezza della base** regola la base da 0,5 a 20 mm.
-- **Rimuovi la scansione** (il pulsante cestino, o Canc). Una finestra chiede conferma; tutto ciò che è stato calcolato dalla scansione sparisce e `Ctrl+Z` lo ripristina.
+- **Rimuovi la scansione** (il pulsante cestino sulla riga, o il tasto Canc): vedi la sezione 5.2.5. Una finestra chiede conferma; tutto ciò che è stato calcolato dalla scansione sparisce e `Ctrl+Z` lo ripristina.
 
 #### 5.2.4 Scansionare con uno scanner 3D (alpha)
 
@@ -205,6 +205,28 @@ Nella vista semplice la finestra ha tre passi: **1 Acquisizione**, **2 Superfici
 
 Una luce costante e diffusa dà le scansioni più pulite: il repository comprende il progetto di una custodia per lo scanner con illuminazione LED controllata. La luce di riempimento dello scanner si accende durante l'acquisizione e si spegne dopo.
 
+#### 5.2.5 Rimuovere una scansione o un modello importato
+
+Ogni scansione del caso, qualunque sia il suo ruolo (**Superiore**, **Inferiore** o **Morso**), si può rimuovere: un file importato per errore, il modello di un altro paziente, una presa del morso venuta male.
+
+**Quattro modi per avviare la rimozione** (fanno tutti la stessa cosa):
+
+- Il **pulsante cestino** sulla riga della scansione in **Scansioni nel caso** (inspector di **Importa scansioni**).
+- Il **pulsante cestino** su ogni riga delle scansioni del morso nell'inspector di **Morso**.
+- Il pulsante **Rimuovi la scansione** in **Componente selezionato**, il primo blocco del pannello destro, quando la scansione è il componente selezionato.
+- Il tasto `Canc` o `Backspace` con la scansione selezionata. Il tasto non fa nulla mentre uno strumento è aperto o mentre scrivi in un campo di testo, quindi Backspace in un campo non rimuove mai una scansione.
+
+**Conferma.** Una finestra **Rimuovere la scansione?** nomina la scansione e dice che esce dal caso insieme a tutto ciò che è stato calcolato da essa, e che `Ctrl+Z` la riporta. **Rimuovi** conferma; qualunque altra scelta annulla, e fino alla conferma non è cambiato nulla.
+
+**Risultato.** La rimozione è un solo passo annullabile. Un avviso dice **Scansione rimossa**; se dei risultati sono stati cancellati, un secondo avviso, **Risultati cancellati**, li elenca. `Ctrl+Z` riporta insieme la scansione e tutto ciò che ha cancellato; `Ctrl+Maiusc+Z` la rimuove di nuovo.
+
+**Che cosa viene cancellato:**
+
+- **La scansione di un'arcata (superiore o inferiore)** porta via tutto ciò che deriva da quell'arcata: i suoi punti dente e i denti segnati come mancanti, i colori dei denti (denti e gengiva), gli assi e le misure dei denti, i denti 3D, la gengiva, l'analisi del caso (compresi i rapporti di Bolton e il punteggio di complessità, che richiedono entrambe le arcate), la posizione finale, gli allineatori, la revisione clinica, le rampe del morso, le visite di controllo e il modello da studio di quell'arcata. Viene cancellata anche la registrazione del morso, da rifare. Le tue impostazioni restano. L'altra arcata non viene toccata: resta dove la registrazione del morso l'aveva spostata, quindi esegui di nuovo **Morso**. Il sistema di riferimento del caso viene azzerato, come quando una scansione viene sostituita.
+- **La scansione di un morso** cancella solo la registrazione del morso, e solo se quella scansione vi ha partecipato. Un morso virtuale e una registrazione fatta sull'altra scansione del morso restano. Le arcate restano dove la registrazione le aveva spostate: esegui di nuovo **Morso**.
+
+**Quando viene rifiutata.** La scansione di un'arcata non si può rimuovere finché il caso contiene dati di un modulo che questa versione non sa leggere (un file scritto da una versione più recente): l'avviso ne dice il motivo. La scansione di un morso si può rimuovere comunque.
+
 ### 5.3 Passo 2: Trova i denti (gruppo Denti)
 
 **Esegui** numera automaticamente i denti di ogni arcata (numeri FDI) e poi orienta l'arcata; il risultato è un **punto dente** per ogni dente, in un solo passo annullabile.
@@ -215,7 +237,7 @@ Una luce costante e diffusa dà le scansioni più pulite: il repository comprend
 - **Denti assenti**: numeri FDI separati da virgole (per esempio `35, 45`). Un numero sbagliato mostra un messaggio rosso; l'elenco si salva quando esci dal campo.
 - **Denti trovati**: una griglia per arcata, prima il lato destro del paziente. Una casella piena significa che il dente ha un punto, una casella barrata che è assente, una casella vuota che non ha un punto.
 
-DentalCraft controlla la propria proposta: se la numerazione desse un terzo molare dove la scansione ha solo gengiva dietro gli ultimi molari, o fondesse un dente affollato con il vicino, la proposta viene corretta invece di spostare ogni numero successivo. Il riconoscimento si ferma agli ultimi molari; non inventa mai denti oltre.
+DentalCraft controlla la propria proposta. Se la numerazione desse un terzo molare dove la scansione ha solo gengiva dietro gli ultimi molari, estendesse un dente sulla gengiva in fondo all'arcata, o fondesse due denti affollati in uno, i denti vengono cercati di nuovo con l'arcata libera di finire all'ultima corona, invece di spostare ogni numero successivo all'errore. Un dente fantasma dietro l'ultimo molare quindi non viene numerato, e i denti vicini restano denti separati. Un terzo molare erotto mantiene il suo numero. Il riconoscimento si ferma agli ultimi molari; non inventa mai denti oltre. Come sempre, controlla i numeri prima di proseguire.
 
 **Correzioni a mano:** **Segna un dente** (clic per posizionare o spostare, Maiusc+clic per eliminare il punto più vicino), **Elimina un dente**, **Cambia il numero di un dente**, **Dente assente**, **Numera i denti in ordine** (fai clic su ogni dente a turno: `S` salta, Backspace torna indietro, Invio o Esc termina) e **Elimina tutti i punti dente**.
 
@@ -231,7 +253,7 @@ I denti vicini restano denti separati: non vengono mai fusi in uno solo. Eseguir
 
 ### 5.5 Passo 4: Denti 3D (gruppo Denti)
 
-**Esegui** dà ogni dente come **solido 3D chiuso** con il suo asse e costruisce una gengiva che segue i denti. Ogni dente viene chiuso e squadrato, quindi nessuna mesh resta aperta. Richiede che i denti siano separati. La posizione finale e gli allineatori dell'arcata, se ci sono, vengono azzerati perché erano pianificati sui vecchi denti.
+**Esegui** dà ogni dente come **solido 3D chiuso** con il suo asse e costruisce una gengiva che segue i denti. Ogni dente viene chiuso e squadrato, quindi nessuna mesh resta aperta, e anche la gengiva è chiusa: una base piana, 3 mm sotto il suo punto più basso lungo l'asse occlusale, ne fa un solido chiuso come la base di una scansione d'arcata importata. La base resta ferma mentre i denti si muovono; gli allineatori e l'esportazione sono costruiti senza di essa. Richiede che i denti siano separati. La posizione finale e gli allineatori dell'arcata, se ci sono, vengono azzerati perché erano pianificati sui vecchi denti.
 
 Dopo le correzioni con il pennello, **Esegui di nuovo** ricostruisce solo i denti dell'arcata che sono cambiati; gli altri tengono i loro solidi. **Ricostruisci un dente** ricostruisce un singolo dente, e **Mostra la zona** evidenzia la zona da cui un dente è stato costruito.
 
@@ -243,15 +265,26 @@ Le **Correzioni a mano** (**Correggi a mano l'analisi del caso**) permettono al 
 
 ### 5.7 Passo 6: Morso (gruppo Piano)
 
-Il morso stabilisce come l'arcata superiore si affaccia all'inferiore. È solo funzionale: imposta l'occlusione, e la **scansione del morso non viene mai mostrata come oggetto 3D** nella vista (se non mentre scegli i suoi tre punti).
+Il morso stabilisce come l'arcata superiore si affaccia all'inferiore. È solo funzionale: imposta l'occlusione, e la **scansione del morso non viene mai mostrata come oggetto 3D** nella vista (compare solo mentre scegli i suoi tre punti, e non si può selezionare facendo clic nella vista).
 
-- Con **scansioni del morso** nel caso (una per lato per uno scanner intraorale, oppure una scansione attorno all'arcata per modelli in occlusione), **Esegui** registra le arcate su di esse. Un morso è accettato quando la parte anteriore è acquisita correttamente: la parte posteriore della bocca non deve essere completa.
+- Con **scansioni del morso** nel caso (una per lato per uno scanner intraorale, oppure una scansione attorno all'arcata per modelli in occlusione), **Esegui** registra le arcate su di esse. Anche una scansione del morso parziale o di bassa qualità viene usata, purché i suoi denti combacino con le arcate: una scansione dei soli denti anteriori, di un solo lato, o con buchi, rumore o tessuti molli. Non viene rifiutata perché incompleta: si registra, e la relazione dice che cosa verificare (**da verificare**, sotto). Un morso è accettato quando la parte anteriore è acquisita correttamente: la parte posteriore della bocca non deve essere completa.
 - Senza scansione del morso, **Esegui** usa un **morso virtuale**, e lo dice in un avviso: per la relazione clinica, registra il morso vestibolare.
 - **Importa le scansioni del morso…** importa i file con il ruolo morso.
 - **Tre punti** (a mano): scegli tre punti ben distanziati sull'arcata inferiore, poi gli stessi tre, nello stesso ordine, sulla scansione del morso e, se vuoi, gli stessi per l'arcata superiore.
 - **Correggi la compenetrazione** sposta l'arcata superiore lungo l'asse occlusale fino al primo contatto. La relazione mostra la compenetrazione trovata, quella rimasta e l'apertura.
 
-La relazione di registrazione mostra **Morso registrato** oppure **Morso registrato, da verificare**, con una riga per ogni motivo di verifica (per esempio uno scarto oltre 0,10 mm, meno di quattro denti in contatto, solo i denti anteriori). Dopo questo passo le due arcate non si compenetrano mai in modo visibile nella vista 3D.
+La relazione di registrazione mostra **Morso registrato** quando non c'è nulla da verificare, oppure **Morso registrato, da verificare** con una riga per ogni motivo. I motivi dipendono da quanto è buona la scansione e da quanta parte della bocca copre, mai da un rifiuto:
+
+- **Scarto RMS oltre il buono:** la scansione si discosta più di 0,10 mm da un'arcata (scarto RMS sull'arcata inferiore o superiore).
+- **Pochi denti:** nella scansione del morso ci sono meno di quattro denti di un'arcata.
+- **Bassa coerenza:** meno del 70 % della superficie della scansione affacciata a un'arcata sta entro 0,10 mm da essa (scansione rumorosa o deformata).
+- **Solo denti anteriori** o **un solo lato:** la scansione non arriva ai denti posteriori, o all'altro lato; lì la relazione è estrapolata. Aggiungi la scansione dell'altro lato, o verifica i contatti sul paziente.
+- **Le due scansioni del morso non concordano:** con due scansioni, i denti superiori distano più di 0,10 mm (il paziente ha chiuso in modo diverso?).
+- **Compenetrazione:** le arcate si compenetrano per più di 0,10 mm; **Correggi la compenetrazione** la elimina.
+- **Le arcate non si toccano:** i punti più vicini distano più di 0,10 mm (il paziente era in massima intercuspidazione?).
+- **Scansione ignorata:** con due scansioni del morso (i due lati, o due prese degli stessi denti), quella che non combacia con le arcate mentre l'altra sì viene lasciata fuori e nominata nella relazione. La registrazione si basa sull'altra scansione, e quella ignorata resta dov'era. Due prese salvate con lo stesso nome di file si distinguono con un numero, per esempio `(2)`.
+
+Un morso «da verificare» è registrato e usato: la riga dice che cosa controllare. Un morso viene **rifiutato**, e nulla si sposta, solo quando l'accoppiamento non è affatto affidabile: nessuna scansione del morso combacia con le arcate (altro paziente, scansione speculare, o scansione senza i denti di entrambe le arcate; con due scansioni il messaggio dà il motivo di quella che si è avvicinata di più), le arcate registrate non si affacciano, oppure dopo l'accoppiamento si compenetrano per più di 1,0 mm. Lo stesso messaggio compare anche con più di due scansioni del morso, con un'arcata senza denti separati o con una scansione troppo piccola. Dopo un rifiuto, prova un'altra presa o **Tre punti**, oppure rimuovi la scansione sbagliata (sezione 5.2.5). La stima di un morso virtuale non subentra mai in silenzio dopo un rifiuto. Dopo questo passo le due arcate non si compenetrano mai in modo visibile nella vista 3D.
 
 ### 5.8 Passo 7: Posizione finale (gruppo Piano)
 
@@ -413,6 +446,7 @@ La barra degli strumenti sopra la vista ha: le viste standard (**Occlusale**, **
 - **Selezione:** senza strumenti aperti, fai clic su un componente (un dente 3D, una gengiva, una scansione, un numero di dente). La selezione riceve un contorno marcato attorno all'oggetto, e l'ispettore inizia con **Componente selezionato**.
 - **Gizmo:** il componente selezionato porta un gizmo di trasformazione: `W` sposta, `E` ruota, `R` scala (solo i denti; Ctrl aggancia a 0,5 mm, 5°, ×0,05). Un trascinamento viene mostrato in anteprima e applicato come un solo passo annullabile; Esc lo annulla. Un dente si muove nel piano allo stadio mostrato, mai allo stadio 0.
 - **I numeri dei denti** compaiono come targhette sopra i denti; `Alt`+clic su un numero, un punto o sulla scansione sceglie quel dente per il pennello.
+- **Scansione del morso:** la scansione del morso non viene disegnata nella vista (solo mentre lo strumento **Tre punti** è aperto) e non si può selezionare con un clic: è una scansione funzionale, non un modello. Rimuovila dalla sua riga negli elenchi (sezione 5.2.5).
 
 | Tasto | Azione |
 |---|---|
@@ -449,9 +483,12 @@ Un progetto è un unico file `.dcprj` (un contenitore ZIP: il caso, le scansioni
 | Un passo non fa nulla quando faccio clic sulla sua voce di menu | È voluto: il clic seleziona soltanto. Usa **Esegui** nell'ispettore. |
 | **Esegui** è disattivato | Un altro comando è in corso (vedi la barra di stato); aspetta o fermalo con la croce. |
 | **Prima il morso** | Con entrambe le arcate, esegui **Morso** prima di **Posizione finale**. |
+| **Morso registrato, da verificare** | La registrazione è usata ma una o più righe dicono che cosa controllare (sezione 5.7). Verifica i contatti con la mappa dei contatti e sul paziente, oppure aggiungi una scansione del morso migliore. |
+| Il morso è rifiutato | Nessuna scansione del morso combaciava con le arcate, le arcate non si affacciano, oppure si compenetrano per più di 1,0 mm. Leggi il messaggio, prova un'altra presa o **Tre punti**, oppure rimuovi la scansione sbagliata (sezione 5.2.5). |
 | Un passo ha perso la spunta o mostra **Risultati da rifare** | Una modifica a monte (punti dente, colori, denti) l'ha reso obsoleto. Eseguilo di nuovo, poi i passi successivi. `Ctrl+Z` annulla la modifica. |
 | **Non è un numero di dente** | Usa numeri FDI: da 11 a 18, da 21 a 28, da 31 a 38, da 41 a 48. |
 | Un'arcata non è stata numerata | Il messaggio indica la scansione da controllare; quell'arcata conserva i punti che aveva. Segna i denti a mano o correggi la scansione, poi esegui di nuovo. |
+| Ho importato la scansione sbagliata | Usa il pulsante cestino sulla sua riga (o selezionala e premi Canc). Conferma; `Ctrl+Z` la riporta con ciò che aveva cancellato. Vedi la sezione 5.2.5. |
 | **Salvataggio non riuscito** | Controlla che la cartella sia scrivibile e che il disco abbia spazio, poi **Salva** di nuovo. Il file precedente è conservato come `.bak`. |
 | Lo scanner non viene trovato o il flusso si interrompe | Ricollega lo scanner. Linux: il tuo utente deve poter usare il dispositivo della fotocamera. Windows: consenti l'accesso alla fotocamera alle app desktop. L'app dice se il dispositivo è andato perso. |
 | Il piatto rotante non si collega | Spegnilo e riaccendilo, avvicinalo e collegalo di nuovo. Dovrebbe collegarsi al primo tentativo; non serve mai dimenticarlo o riassociarlo per cambiare dispositivo. Se non succede, invia la diagnostica (capitolo 9) con la tua segnalazione. |

@@ -1,6 +1,6 @@
 # DentalCraft: Fonti
 
-*Bibliografia degli articoli, delle norme, dei manuali e delle specifiche su cui si basa DentalCraft. Edizione del 21 novembre 2026. L'elenco aggiornato è `SOURCES.md` nel repository `dentalcraft`; questo documento viene rigenerato da esso a ogni release. Autori, titoli e sedi di pubblicazione sono riportati nella lingua originale.*
+*Bibliografia degli articoli, delle norme, dei manuali e delle specifiche su cui si basa DentalCraft. Edizione del 22 novembre 2026. L'elenco aggiornato è `SOURCES.md` nel repository `dentalcraft`; questo documento viene rigenerato da esso a ogni release. Autori, titoli e sedi di pubblicazione sono riportati nella lingua originale.*
 
 Ogni articolo, libro, manuale, dataset, norma, RFC e specifica su cui DentalCraft si basa, raggruppato per area. Per ciascuno: autori, anno, titolo, sede di pubblicazione, DOI o URL, e dove viene usato.
 

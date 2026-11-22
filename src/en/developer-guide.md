@@ -1,6 +1,6 @@
 # DentalCraft Developer Guide
 
-*How the repositories fit together, how to build, test and release them, how an agent drives the application, and how to contribute. Edition of 21 November 2026, for DentalCraft 0.2.0-alpha.14 (Aligners module 0.2.0-alpha.12, engine 0.3.0-alpha.8).*
+*How the repositories fit together, how to build, test and release them, how an agent drives the application, and how to contribute. Edition of 22 November 2026, for DentalCraft 0.2.0-alpha.15 (Aligners module 0.2.0-alpha.13, engine 0.3.0-alpha.9).*
 
 > **Not a medical device.** DentalCraft is research and design software. It is not certified for clinical use, and nothing in this guide changes that.
 
@@ -150,7 +150,7 @@ The superproject's `.cargo/config.toml` enables `sccache` and the `mold` linker 
 `dentalcraft-aligners` and `dentalcraft-app` depend on the other repositories as git dependencies, pinned by tag:
 
 ```toml
-dc-case = { git = "https://github.com/dnviti/dentalcraft-core.git", tag = "v0.3.0-alpha.8" }
+dc-case = { git = "https://github.com/dnviti/dentalcraft-core.git", tag = "v0.3.0-alpha.9" }
 ```
 
 To work on core and a consumer at the same time without publishing anything, the superproject's `.cargo/config.toml` redirects those git sources to the working trees:
@@ -402,6 +402,7 @@ As of this edition there are 38 harnesses (core 19, aligners 15, app 4): FDI num
 - **Golden oracle tests:** the Rust algorithms are compared with the original Blender add-on on fixtures and on real scans, with tolerances (vertices Hausdorff below 0.01 mm, labels at least 99 %, poses within 0.01 mm and 0.05°, diagnosis relative error below 1e-3). Where the Rust code intentionally deviates (for example the arch-end check of *Find the teeth*), the deviation is recorded and tested.
 - **Headless UI logic** with `egui_kittest`: every screen in both languages, key parity, the settings, the workspace save test. wgpu snapshot tests need a GPU and run locally only.
 - **Behaviour that regressed once gets a test:** adjacent teeth stay separate, detection stops at the last molars, teeth never spin through 360°, a bite never visibly interpenetrates, the session survives a restart.
+- **Tests that are too slow without optimisations** are ignored in a debug build and run with `cargo test --release`, which is what CI does: `dca-algo` has a `build.rs` that sets `cfg(optimized)` when the opt-level is above 0, and the tests of `tests/bite_robustness.rs` (partial, low-quality, two-take and mirrored bite scans) are marked `#[ignore]` unless it is set.
 
 ## 11. Adding a feature
 
@@ -460,6 +461,7 @@ The commands registered in this edition, as printed by `dentalcraft-cli commands
 | `project.open` | Open project |
 | `project.save` | Save project |
 | `case.import` | Import scan |
+| `case.remove-scan` | Remove scan |
 | `case.set-role` | Set scan role |
 | `edit.undo` | Undo |
 | `edit.redo` | Redo |
